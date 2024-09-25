@@ -20,9 +20,11 @@
             background-color: #444;
             border: 1px solid #fff;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
         .marked {
             background-color: #008000; /* Verde para depósitos marcados */
+            color: white; /* Mudança de cor do texto para melhor contraste */
         }
         .tooltip {
             position: absolute;
@@ -92,10 +94,13 @@
         };
 
         const updateDaysSinceStart = () => {
-            const firstDate = new Date(localStorage.getItem('startDate')) || new Date();
-            localStorage.setItem('startDate', firstDate.toISOString());
-            const daysSinceStart = Math.floor((new Date() - firstDate) / (1000 * 60 * 60 * 24));
-            document.getElementById('daysSinceStart').textContent = `${daysSinceStart} dias desde o início`;
+            const currentUser = localStorage.getItem('currentUser');
+            const firstDepositDate = localStorage.getItem(`firstDepositDate_${currentUser}`);
+
+            if (firstDepositDate) {
+                const daysSinceStart = Math.floor((new Date() - new Date(firstDepositDate)) / (1000 * 60 * 60 * 24));
+                document.getElementById('daysSinceStart').textContent = `${daysSinceStart} dias desde o início`;
+            }
         };
 
         const updateTotals = () => {
@@ -108,6 +113,9 @@
         const saveLog = () => {
             const currentUser = localStorage.getItem('currentUser');
             localStorage.setItem(`markedDeposits_${currentUser}`, JSON.stringify(Array.from(markedDeposits.entries())));
+            if (markedDeposits.size === 1) {
+                localStorage.setItem(`firstDepositDate_${currentUser}`, new Date().toISOString());
+            }
         };
 
         const playDepositSound = () => {
@@ -148,6 +156,7 @@
                     }
                     saveLog();
                     updateTotals();
+                    updateDaysSinceStart(); // Atualiza os dias após a modificação dos depósitos
                 };
 
                 depositContainer.appendChild(box);
@@ -157,9 +166,11 @@
         document.getElementById('resetButton').onclick = () => {
             if (confirm('Deseja reiniciar os depósitos?')) {
                 markedDeposits.clear();
+                localStorage.removeItem(`firstDepositDate_${localStorage.getItem('currentUser')}`); // Remove a data do primeiro depósito
                 saveLog();
                 updateTotals();
                 generateDeposits();
+                updateDaysSinceStart(); // Atualiza a contagem de dias
             }
         };
 

@@ -199,6 +199,14 @@
             const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
             savedDeposits.forEach(([deposit, date]) => markedDeposits.set(deposit, new Date(date)));
 
+            // Aplica a classe 'marked' visualmente nos depósitos recuperados
+            savedDeposits.forEach(([deposit]) => {
+                const box = document.querySelector(`.deposit-box:nth-child(${deposit})`);
+                if (box) {
+                    box.classList.add('marked');
+                }
+            });
+
             updateTotals();
         };
     </script>

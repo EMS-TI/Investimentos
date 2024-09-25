@@ -62,8 +62,8 @@
     <div class="login-container">
         <div class="message">Cadastre-se para iniciar seus depósitos</div>
         <h1>Login</h1>
-        <input type="text" id="username" placeholder="E-mail">
-        <input type="password" id="password" placeholder="Senha">
+        <input type="text" id="username" placeholder="E-mail" required>
+        <input type="password" id="password" placeholder="Senha" required>
         <button id="loginButton">Entrar</button>
         <button id="registerButton">Cadastrar</button>
         <button id="deleteButton">Excluir Usuário</button>
@@ -92,6 +92,11 @@
             const email = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
+            if (!email || !password) {
+                alert("Por favor, preencha todos os campos.");
+                return;
+            }
+
             signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
@@ -100,7 +105,9 @@
                 window.location.href = "depositos.html"; // Redireciona para a página de depósitos
             })
             .catch((error) => {
-                alert("Erro ao logar: " + error.message);
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                alert("Erro ao logar: " + errorMessage);
             });
         };
 
@@ -109,12 +116,19 @@
             const email = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
+            if (!email || !password) {
+                alert("Por favor, preencha todos os campos.");
+                return;
+            }
+
             createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 alert("Usuário cadastrado com sucesso!");
             })
             .catch((error) => {
-                alert("Erro ao cadastrar: " + error.message);
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                alert("Erro ao cadastrar: " + errorMessage);
             });
         };
 
@@ -124,10 +138,13 @@
 
             if (user) {
                 deleteUser(user).then(() => {
-                    localStorage.removeItem(`${user.email}_markedDeposits`); // Remove os depósitos do usuário
                     alert("Usuário excluído com sucesso!");
+                    localStorage.removeItem('currentUser'); // Limpa o usuário atual
+                    localStorage.removeItem('isLoggedIn'); // Limpa status de login
                 }).catch((error) => {
-                    alert("Erro ao excluir usuário: " + error.message);
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    alert("Erro ao excluir usuário: " + errorMessage);
                 });
             } else {
                 alert("Nenhum usuário logado.");

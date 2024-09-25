@@ -20,7 +20,6 @@
             background-color: #444;
             border: 1px solid #fff;
             cursor: pointer;
-            position: relative;
             transition: background-color 0.3s;
         }
         .marked {
@@ -69,22 +68,24 @@
     <audio id="depositSound" src="audio/deposit-sound.mp3"></audio> <!-- Ajuste o caminho do áudio aqui -->
 
     <script>
-        const deposits = Array.from({ length: 100 }, (_, i) => i + 1);
-        const totalAmount = 5050.00;
-        const markedDeposits = new Set();
+        const deposits = Array.from({ length: 100 }, (_, i) => i + 1); // Criar 100 depósitos
+        const totalAmount = 5050.00; // Valor total que deve ser alcançado
+        const markedDeposits = new Set(); // Conjunto para depósitos marcados
 
+        // Carregar depósitos do localStorage ao carregar a página
         function loadFromLocalStorage() {
             const currentUser = localStorage.getItem('currentUser');
             const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
             savedDeposits.forEach(deposit => markedDeposits.add(deposit));
-            updateDaysSinceStart();
+            updateDaysSinceStart(currentUser);
             updateTotals();
             generateDeposits();
         }
 
+        // Gerar visualização dos depósitos
         function generateDeposits() {
             const depositContainer = document.getElementById('depositContainer');
-            depositContainer.innerHTML = '';
+            depositContainer.innerHTML = ''; // Limpar conteúdo anterior
             deposits.forEach((deposit) => {
                 const box = document.createElement('div');
                 box.className = 'deposit-box';
@@ -99,28 +100,29 @@
                     } else {
                         markedDeposits.add(deposit);
                     }
-                    saveLog();
+                    saveLog(); // Salvar estado atual
                     generateDeposits(); // Atualiza a visualização
-                    updateTotals(); // Atualiza a soma total dos depósitos
-                    updateProgressBar();
-                    playDepositSound();
+                    updateTotals(); // Atualiza total depositado
+                    updateProgressBar(); // Atualiza barra de progresso
+                    playDepositSound(); // Reproduz som
                 };
 
                 if (markedDeposits.has(deposit)) {
                     box.classList.add('marked'); // Adiciona classe para marcar visualmente
                 }
-                depositContainer.appendChild(box);
+                depositContainer.appendChild(box); // Adiciona box ao container
             });
-            updateProgressBar();
+            updateProgressBar(); // Atualiza barra de progresso
         }
 
+        // Salvar depósitos marcados no localStorage
         function saveLog() {
             const currentUser = localStorage.getItem('currentUser');
             localStorage.setItem(`markedDeposits_${currentUser}`, JSON.stringify(Array.from(markedDeposits)));
         }
 
-        function updateDaysSinceStart() {
-            const currentUser = localStorage.getItem('currentUser');
+        // Atualizar contagem de dias desde o primeiro depósito
+        function updateDaysSinceStart(currentUser) {
             const firstDepositDate = localStorage.getItem(`firstDeposit_${currentUser}`);
             if (firstDepositDate) {
                 const daysSinceStart = Math.floor((Date.now() - new Date(firstDepositDate).getTime()) / (1000 * 60 * 60 * 24));
@@ -128,43 +130,49 @@
             }
         }
 
+        // Atualizar totais de depósitos e valores restantes
         function updateTotals() {
             const totalDeposited = markedDeposits.size * 50.00; // Cada depósito equivale a R$50,00
             document.getElementById('totalDeposited').textContent = totalDeposited.toFixed(2);
             document.getElementById('amountRemaining').textContent = (totalAmount - totalDeposited).toFixed(2);
         }
 
+        // Atualizar barra de progresso
         function updateProgressBar() {
             const progress = (markedDeposits.size / deposits.length) * 100;
             document.getElementById('progress').style.width = `${progress}%`;
             document.getElementById('progress').textContent = `${Math.round(progress)}%`;
         }
 
+        // Reproduzir som ao realizar um depósito
         function playDepositSound() {
             document.getElementById('depositSound').play();
         }
 
+        // Reiniciar depósitos
         document.getElementById('resetButton').onclick = () => {
             if (confirm('Você tem certeza de que deseja reiniciar os depósitos?')) {
                 const currentUser = localStorage.getItem('currentUser');
-                localStorage.removeItem(`markedDeposits_${currentUser}`);
-                markedDeposits.clear();
-                generateDeposits();
-                updateTotals();
-                updateProgressBar();
+                localStorage.removeItem(`markedDeposits_${currentUser}`); // Remove os depósitos do usuário
+                markedDeposits.clear(); // Limpar depósitos marcados
+                generateDeposits(); // Regenerar visualização
+                updateTotals(); // Atualizar totais
+                updateProgressBar(); // Atualizar barra de progresso
             }
         };
 
+        // Sair da conta e remover dados do usuário
         document.getElementById('logoutButton').onclick = () => {
             const currentUser = localStorage.getItem('currentUser');
             if (currentUser) {
                 localStorage.removeItem(`markedDeposits_${currentUser}`); // Remove os depósitos do usuário
             }
-            localStorage.removeItem('currentUser');
-            localStorage.removeItem('isLoggedIn');
-            window.location.href = "index.html";
+            localStorage.removeItem('currentUser'); // Remove usuário atual
+            localStorage.removeItem('isLoggedIn'); // Remove estado de login
+            window.location.href = "index.html"; // Redirecionar para login
         };
 
+        // Carregar depósitos ao carregar a página
         window.onload = loadFromLocalStorage;
 
     </script>

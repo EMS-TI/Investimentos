@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página de Login</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -62,7 +65,7 @@
     <div class="login-container">
         <div class="message">Cadastre-se para iniciar seus depósitos</div>
         <h1>Login</h1>
-        <input type="text" id="username" placeholder="Usuário">
+        <input type="text" id="email" placeholder="Email">
         <input type="password" id="password" placeholder="Senha">
         <button id="loginButton">Entrar</button>
         <button id="registerButton">Cadastrar</button>
@@ -70,68 +73,66 @@
     </div>
 
     <script>
+        // Configuração do Firebase (adicione sua configuração aqui)
+    const firebaseConfig = {
+            apiKey: "AIzaSyDdCpIPstVuvZ07gZnEV4HS5x-962e_fBA",
+            authDomain: "depositos-8719a.firebaseapp.com",
+            projectId: "depositos-8719a",
+            storageBucket: "depositos-8719a.appspot.com",
+            messagingSenderId: "632628173221",
+            appId: "1:632628173221:web:1fade2c0fbccfcc901f04c"
+        };
+
+        // Inicializar Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.getAuth();
+        const db = firebase.firestore();
+
         // Função de login
         document.getElementById('loginButton').onclick = function() {
-            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            // Verifica se o usuário está cadastrado
-            const storedPassword = localStorage.getItem(username);
-
-            if (storedPassword && storedPassword === password) {
-                localStorage.setItem('currentUser', username);
-                localStorage.setItem('isLoggedIn', true);
-                window.location.href = "depositos.html"; // Redireciona para a página de depósitos
-            } else {
-                alert("Usuário ou senha incorretos!");
-            }
+            firebase.signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    alert("Login bem-sucedido!");
+                    window.location.href = "depositos.html"; // Redireciona para a página de depósitos
+                })
+                .catch((error) => {
+                    alert("Erro no login: " + error.message);
+                });
         };
 
         // Função para cadastrar usuário
         document.getElementById('registerButton').onclick = function() {
-            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            if (username && password) {
-                localStorage.setItem(username, password);
-                alert("Usuário cadastrado com sucesso!");
-            } else {
-                alert("Preencha todos os campos para cadastrar!");
-            }
+            firebase.createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    alert("Usuário cadastrado com sucesso!");
+                })
+                .catch((error) => {
+                    alert("Erro no cadastro: " + error.message);
+                });
         };
 
         // Função para excluir usuário
         document.getElementById('deleteButton').onclick = function() {
-            const username = document.getElementById('username').value;
+            const user = auth.currentUser;
 
-            if (localStorage.getItem(username)) {
-                // Remove o usuário
-                localStorage.removeItem(username);
-                
-                // Remove os depósitos do usuário
-                localStorage.removeItem(`markedDeposits_${username}`);
-                
-                alert("Usuário e seus depósitos excluídos com sucesso!");
+            if (user) {
+                user.delete()
+                    .then(() => {
+                        alert("Usuário excluído com sucesso!");
+                    })
+                    .catch((error) => {
+                        alert("Erro ao excluir usuário: " + error.message);
+                    });
             } else {
-                alert("Usuário não encontrado!");
-            }
-        };
-
-        // Função para permitir login com a tecla Enter
-        document.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                document.getElementById('loginButton').click();
-            }
-        });
-
-        // Verificação de login ao carregar a página de depósitos
-        window.onload = function() {
-            const isLoggedIn = localStorage.getItem('isLoggedIn');
-            const currentPage = window.location.pathname.split("/").pop();
-
-            // Se não estiver logado, redireciona para a página de login
-            if (currentPage === 'depositos.html' && !isLoggedIn) {
-                window.location.href = "index.html";
+                alert("Nenhum usuário logado!");
             }
         };
     </script>

@@ -26,16 +26,6 @@
         .marked {
             background-color: #008000; /* Verde para depósitos marcados */
         }
-        .tooltip {
-            position: absolute;
-            background-color: #fff;
-            color: #000;
-            padding: 5px;
-            border-radius: 5px;
-            display: none;
-            white-space: nowrap;
-            z-index: 10;
-        }
         .total-info {
             margin: 20px;
         }
@@ -105,14 +95,13 @@
                         const confirmation = confirm('Você tem certeza de que deseja retirar este depósito?');
                         if (confirmation) {
                             markedDeposits.delete(deposit);
-                            saveLog();
-                            generateDeposits(); // Atualiza a visualização
                         }
                     } else {
                         markedDeposits.add(deposit);
-                        saveLog();
                     }
+                    saveLog();
                     generateDeposits(); // Atualiza a visualização
+                    updateTotals(); // Atualiza a soma total dos depósitos
                     updateProgressBar();
                     playDepositSound();
                 };
@@ -122,7 +111,6 @@
                 }
                 depositContainer.appendChild(box);
             });
-            updateTotals();
             updateProgressBar();
         }
 
@@ -141,7 +129,7 @@
         }
 
         function updateTotals() {
-            const totalDeposited = markedDeposits.size * 50.00;
+            const totalDeposited = markedDeposits.size * 50.00; // Cada depósito equivale a R$50,00
             document.getElementById('totalDeposited').textContent = totalDeposited.toFixed(2);
             document.getElementById('amountRemaining').textContent = (totalAmount - totalDeposited).toFixed(2);
         }

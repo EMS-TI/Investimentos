@@ -75,6 +75,11 @@
         // Carregar depósitos do localStorage ao carregar a página
         function loadFromLocalStorage() {
             const currentUser = localStorage.getItem('currentUser');
+            if (!currentUser) {
+                alert('Usuário não encontrado. Você será redirecionado para a tela de login.');
+                window.location.href = "index.html"; // Redirecionar para login
+                return;
+            }
             const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
             savedDeposits.forEach(deposit => markedDeposits.add(deposit));
             updateDaysSinceStart(currentUser);
@@ -99,7 +104,6 @@
                         }
                     } else {
                         markedDeposits.add(deposit);
-                        // Armazenar a data do primeiro depósito, se ainda não estiver armazenada
                         const currentUser = localStorage.getItem('currentUser');
                         if (!localStorage.getItem(`firstDeposit_${currentUser}`)) {
                             localStorage.setItem(`firstDeposit_${currentUser}`, new Date().toISOString());

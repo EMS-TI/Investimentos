@@ -105,9 +105,13 @@
             const username = document.getElementById('username').value;
 
             if (localStorage.getItem(username)) {
+                // Remove o usuário
                 localStorage.removeItem(username);
-                localStorage.removeItem(`${username}_markedDeposits`); // Remove os depósitos do usuário
-                alert("Usuário excluído com sucesso!");
+                
+                // Remove os depósitos do usuário
+                localStorage.removeItem(`markedDeposits_${username}`);
+                
+                alert("Usuário e seus depósitos excluídos com sucesso!");
             } else {
                 alert("Usuário não encontrado!");
             }

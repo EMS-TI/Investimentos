@@ -99,6 +99,11 @@
                         }
                     } else {
                         markedDeposits.add(deposit);
+                        // Armazenar a data do primeiro depósito, se ainda não estiver armazenada
+                        const currentUser = localStorage.getItem('currentUser');
+                        if (!localStorage.getItem(`firstDeposit_${currentUser}`)) {
+                            localStorage.setItem(`firstDeposit_${currentUser}`, new Date().toISOString());
+                        }
                     }
                     saveLog(); // Salvar estado atual
                     generateDeposits(); // Atualiza a visualização
@@ -146,7 +151,9 @@
 
         // Reproduzir som ao realizar um depósito
         function playDepositSound() {
-            document.getElementById('depositSound').play();
+            const audio = document.getElementById('depositSound');
+            audio.currentTime = 0; // Reiniciar som
+            audio.play().catch(error => console.error('Erro ao reproduzir som:', error));
         }
 
         // Reiniciar depósitos
@@ -155,6 +162,7 @@
                 const currentUser = localStorage.getItem('currentUser');
                 localStorage.removeItem(`markedDeposits_${currentUser}`); // Remove os depósitos do usuário
                 markedDeposits.clear(); // Limpar depósitos marcados
+                localStorage.removeItem(`firstDeposit_${currentUser}`); // Limpar a data do primeiro depósito
                 generateDeposits(); // Regenerar visualização
                 updateTotals(); // Atualizar totais
                 updateProgressBar(); // Atualizar barra de progresso
@@ -166,6 +174,7 @@
             const currentUser = localStorage.getItem('currentUser');
             if (currentUser) {
                 localStorage.removeItem(`markedDeposits_${currentUser}`); // Remove os depósitos do usuário
+                localStorage.removeItem(`firstDeposit_${currentUser}`); // Remove a data do primeiro depósito
             }
             localStorage.removeItem('currentUser'); // Remove usuário atual
             localStorage.removeItem('isLoggedIn'); // Remove estado de login

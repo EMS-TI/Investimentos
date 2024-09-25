@@ -170,11 +170,18 @@
         };
 
         window.onload = () => {
+            const currentUser = localStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = "index.html"; // Redireciona para a página de login se não estiver logado
+                return;
+            }
+
             updateDaysSinceStart();
             generateDeposits();
-            const currentUser = localStorage.getItem('currentUser');
+
             const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
             savedDeposits.forEach(([deposit, date]) => markedDeposits.set(deposit, new Date(date)));
+
             updateTotals();
         };
     </script>

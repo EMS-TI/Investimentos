@@ -26,7 +26,7 @@
             font-size: 26px;
             text-align: center;
         }
-        .login-container input, .login-container button {
+        .login-container input {
             display: block;
             width: 100%;
             padding: 10px;
@@ -36,9 +36,15 @@
             font-size: 16px;
         }
         .login-container button {
+            padding: 10px;
             background-color: #007bff;
             color: #fff;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-bottom: 10px;
         }
         .login-container button:hover {
             background-color: #0056b3;
@@ -64,57 +70,56 @@
     </div>
 
     <script>
-        const usernameInput = document.getElementById('username');
-        const passwordInput = document.getElementById('password');
+        document.getElementById('loginButton').onclick = function() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
 
-        const showAlert = (message) => alert(message);
-
-        document.getElementById('loginButton').onclick = () => {
-            const username = usernameInput.value;
-            const password = passwordInput.value;
             const storedPassword = localStorage.getItem(username);
-
-            if (storedPassword === password) {
+            if (storedPassword && storedPassword === password) {
                 localStorage.setItem('currentUser', username);
                 localStorage.setItem('isLoggedIn', true);
-                window.location.href = "depositos.html"; // Redireciona para a página de depósitos
+                window.location.href = "depositos.html"; 
             } else {
-                showAlert("Usuário ou senha incorretos!");
+                alert("Usuário ou senha incorretos!");
             }
         };
 
-        document.getElementById('registerButton').onclick = () => {
-            const username = usernameInput.value;
-            const password = passwordInput.value;
+        document.getElementById('registerButton').onclick = function() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
 
             if (username && password) {
                 localStorage.setItem(username, password);
-                showAlert("Usuário cadastrado com sucesso!");
+                alert("Usuário cadastrado com sucesso!");
             } else {
-                showAlert("Preencha todos os campos para cadastrar!");
+                alert("Preencha todos os campos para cadastrar!");
             }
         };
 
-        document.getElementById('deleteButton').onclick = () => {
-            const username = usernameInput.value;
+        document.getElementById('deleteButton').onclick = function() {
+            const username = document.getElementById('username').value;
+
             if (localStorage.getItem(username)) {
                 localStorage.removeItem(username);
-                localStorage.removeItem(`${username}_markedDeposits`); // Remove os depósitos do usuário
-                showAlert("Usuário excluído com sucesso!");
+                localStorage.removeItem(`${username}_markedDeposits`); 
+                alert("Usuário excluído com sucesso!");
             } else {
-                showAlert("Usuário não encontrado!");
+                alert("Usuário não encontrado!");
             }
         };
 
-        document.addEventListener('keypress', (e) => {
+        document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 document.getElementById('loginButton').click();
             }
         });
 
-        window.onload = () => {
-            if (window.location.pathname.includes('depositos.html') && !localStorage.getItem('isLoggedIn')) {
-                window.location.href = "index.html"; // Redireciona se não estiver logado
+        window.onload = function() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const currentPage = window.location.pathname.split("/").pop();
+
+            if (currentPage === 'depositos.html' && !isLoggedIn) {
+                window.location.href = "index.html";
             }
         };
     </script>

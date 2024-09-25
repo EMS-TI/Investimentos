@@ -20,7 +20,6 @@
             background-color: #444;
             border: 1px solid #fff;
             cursor: pointer;
-            position: relative;
         }
         .marked {
             background-color: #008000; /* Verde para depósitos marcados */
@@ -75,7 +74,6 @@
         <div id="progress">0%</div>
     </div>
 
-    <!-- Carregando o áudio local da pasta audio -->
     <audio id="depositSound" src="C:\Users\Emema\Desktop\Gerenciamento\deposit-sound.mp3"></audio>
 
     <script>
@@ -83,16 +81,40 @@
         const totalAmount = 5050.00;
         const markedDeposits = new Map();
 
-        function loadFromLocalStorage() {
-            const currentUser = localStorage.getItem('currentUser');
-            const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
-            savedDeposits.forEach(([deposit, date]) => markedDeposits.set(deposit, date));
-            updateDaysSinceStart();
-            updateTotals();
-            generateDeposits();
-        }
+        const updateTextContent = (elementId, content) => {
+            document.getElementById(elementId).textContent = content.toFixed(2);
+        };
 
-        function generateDeposits() {
+        const updateProgressBar = (progress) => {
+            const progressBar = document.getElementById('progress');
+            progressBar.style.width = `${progress}%`;
+            progressBar.textContent = `${progress.toFixed(2)}%`;
+        };
+
+        const updateDaysSinceStart = () => {
+            const firstDate = new Date(localStorage.getItem('startDate')) || new Date();
+            localStorage.setItem('startDate', firstDate.toISOString());
+            const daysSinceStart = Math.floor((new Date() - firstDate) / (1000 * 60 * 60 * 24));
+            document.getElementById('daysSinceStart').textContent = `${daysSinceStart} dias desde o início`;
+        };
+
+        const updateTotals = () => {
+            const totalDeposited = Array.from(markedDeposits.keys()).reduce((sum, deposit) => sum + deposit, 0);
+            updateTextContent('totalDeposited', totalDeposited);
+            updateTextContent('amountRemaining', totalAmount - totalDeposited);
+            updateProgressBar((totalDeposited / totalAmount) * 100);
+        };
+
+        const saveLog = () => {
+            const currentUser = localStorage.getItem('currentUser');
+            localStorage.setItem(`markedDeposits_${currentUser}`, JSON.stringify(Array.from(markedDeposits.entries())));
+        };
+
+        const playDepositSound = () => {
+            document.getElementById('depositSound').play();
+        };
+
+        const generateDeposits = () => {
             const depositContainer = document.getElementById('depositContainer');
             depositContainer.innerHTML = '';
             deposits.forEach((deposit) => {
@@ -106,100 +128,55 @@
 
                 box.onmouseenter = () => {
                     if (markedDeposits.has(deposit)) {
-                        const depositDate = new Date(markedDeposits.get(deposit));
-                        const formattedDate = depositDate.toLocaleDateString('pt-BR', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric'
-                        });
-                        tooltip.textContent = `Data do depósito: ${formattedDate}`;
+                        tooltip.textContent = `Data do depósito: ${new Date(markedDeposits.get(deposit)).toLocaleDateString('pt-BR')}`;
                         tooltip.style.display = 'block';
                     }
                 };
 
-                box.onmouseleave = () => {
-                    tooltip.style.display = 'none';
-                };
+                box.onmouseleave = () => tooltip.style.display = 'none';
 
                 box.onclick = () => {
-                    if (markedDeposits.has(deposit)) {
-                        const confirmation = confirm('Você tem certeza de que deseja retirar este depósito?');
-                        if (confirmation) {
-                            markedDeposits.delete(deposit);
-                            saveLog();
-                            generateDeposits();
-                        }
+                    if (!markedDeposits.has(deposit)) {
+                        markedDeposits.set(deposit, new Date());
+                        box.classList.add('marked');
+                        playDepositSound();
                     } else {
-                        markedDeposits.set(deposit, new Date().toISOString());
-                        saveLog();
-                        generateDeposits();
+                        if (confirm('Deseja excluir este depósito?')) {
+                            markedDeposits.delete(deposit);
+                            box.classList.remove('marked');
+                        }
                     }
-                    updateProgressBar();
-                    playDepositSound();
+                    saveLog();
+                    updateTotals();
                 };
 
-                if (markedDeposits.has(deposit)) {
-                    box.classList.add('marked');
-                }
                 depositContainer.appendChild(box);
             });
-            updateTotals();
-            updateProgressBar();
-        }
-
-        function updateDaysSinceStart() {
-            if (markedDeposits.size > 0) {
-                const firstDate = new Date(Array.from(markedDeposits.values())[0]);
-                const now = new Date();
-                const daysSinceStart = Math.floor((now - firstDate) / (1000 * 60 * 60 * 24));
-                document.getElementById('daysSinceStart').textContent = `${daysSinceStart} dias desde o início`;
-            } else {
-                document.getElementById('daysSinceStart').textContent = `0 dias desde o início`;
-            }
-        }
-
-        function updateTotals() {
-            let totalDeposited = 0;
-            markedDeposits.forEach((_, key) => totalDeposited += key);
-            const amountRemaining = totalAmount - totalDeposited;
-
-            document.getElementById('totalDeposited').textContent = totalDeposited.toFixed(2);
-            document.getElementById('amountRemaining').textContent = amountRemaining.toFixed(2);
-        }
-
-        function updateProgressBar() {
-            const progress = (markedDeposits.size / deposits.length) * 100;
-            document.getElementById('progress').style.width = `${progress}%`;
-            document.getElementById('progress').textContent = `${progress.toFixed(2)}%`;
-        }
-
-        function saveLog() {
-            const currentUser = localStorage.getItem('currentUser');
-            localStorage.setItem(`markedDeposits_${currentUser}`, JSON.stringify(Array.from(markedDeposits.entries())));
-        }
-
-        function playDepositSound() {
-            const depositSound = document.getElementById('depositSound');
-            depositSound.play();
-        }
+        };
 
         document.getElementById('resetButton').onclick = () => {
-            const confirmation = confirm('Tem certeza de que deseja reiniciar os depósitos?');
-            if (confirmation) {
+            if (confirm('Deseja reiniciar os depósitos?')) {
                 markedDeposits.clear();
                 saveLog();
+                updateTotals();
                 generateDeposits();
             }
         };
 
         document.getElementById('logoutButton').onclick = () => {
-            localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('currentUser');
-            window.location.href = 'index.html';
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = "index.html"; // Redireciona para a página de login
         };
 
-        window.onload = loadFromLocalStorage;
+        window.onload = () => {
+            updateDaysSinceStart();
+            generateDeposits();
+            const currentUser = localStorage.getItem('currentUser');
+            const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
+            savedDeposits.forEach(([deposit, date]) => markedDeposits.set(deposit, new Date(date)));
+            updateTotals();
+        };
     </script>
-
 </body>
 </html>

@@ -159,6 +159,11 @@
                     updateDaysSinceStart(); // Atualiza os dias após a modificação dos depósitos
                 };
 
+                // Verifica se o depósito já foi marcado e aplica a classe 'marked'
+                if (markedDeposits.has(deposit)) {
+                    box.classList.add('marked');
+                }
+
                 depositContainer.appendChild(box);
             });
         };
@@ -190,6 +195,7 @@
             updateDaysSinceStart();
             generateDeposits();
 
+            // Recupera os depósitos marcados do localStorage
             const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
             savedDeposits.forEach(([deposit, date]) => markedDeposits.set(deposit, new Date(date)));
 

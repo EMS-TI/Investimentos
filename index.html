@@ -73,8 +73,13 @@
     </div>
 
     <script>
-        // Configuração do Firebase (adicione sua configuração aqui)
-        const firebaseConfig = {
+        // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
   apiKey: "AIzaSyDdCpIPstVuvZ07gZnEV4HS5x-962e_fBA",
   authDomain: "depositos-8719a.firebaseapp.com",
   projectId: "depositos-8719a",
@@ -83,8 +88,8 @@
   appId: "1:632628173221:web:1fade2c0fbccfcc901f04c"
 };
 
-        // Inicializar Firebase
-        const app = firebase.initializeApp(firebaseConfig);
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
         const auth = firebase.getAuth();
         const db = firebase.firestore();
 

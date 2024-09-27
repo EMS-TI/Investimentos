@@ -61,7 +61,7 @@
 </head>
 <body>
     <h1>Controle de Depósitos</h1>
-    <p id="daysSinceStart">0 dias desde o início</p>
+    <p id="daysSinceStart">0 dias desde o primeiro depósito</p>
 
     <div class="total-info">
         <p>Total Depositado: R$ <span id="totalDeposited">0.00</span></p>
@@ -75,7 +75,6 @@
         <div id="progress">0%</div>
     </div>
 
-    <!-- Carregando o áudio local da pasta audio -->
     <audio id="depositSound" src="C:\Users\Emema\Desktop\Gerenciamento\deposit-sound.mp3"></audio>
 
     <script>
@@ -87,9 +86,9 @@
             const currentUser = localStorage.getItem('currentUser');
             const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
             savedDeposits.forEach(([deposit, date]) => markedDeposits.set(deposit, date));
-            updateDaysSinceStart();
-            updateTotals();
             generateDeposits();
+            updateDaysSinceStart(); // Atualiza a contagem de dias após carregar os depósitos
+            updateTotals();
         }
 
         function generateDeposits() {
@@ -130,9 +129,11 @@
                             generateDeposits();
                         }
                     } else {
-                        markedDeposits.set(deposit, new Date().toISOString());
+                        const currentDate = new Date().toISOString();
+                        markedDeposits.set(deposit, currentDate);
                         saveLog();
                         generateDeposits();
+                        updateDaysSinceStart(); // Atualiza a contagem de dias após um novo depósito
                     }
                     updateProgressBar();
                     playDepositSound();
@@ -148,11 +149,15 @@
         }
 
         function updateDaysSinceStart() {
-            if (markedDeposits.size > 0) {
-                const firstDate = new Date(Array.from(markedDeposits.values())[0]);
+            const currentUser = localStorage.getItem('currentUser');
+            const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
+
+            if (savedDeposits.length > 0) {
+                // Obtém a data do primeiro depósito
+                const firstDepositDate = new Date(Math.min(...savedDeposits.map(([_, date]) => new Date(date))));
                 const now = new Date();
-                const daysSinceStart = Math.floor((now - firstDate) / (1000 * 60 * 60 * 24));
-                document.getElementById('daysSinceStart').textContent = `${daysSinceStart} dias desde o início`;
+                const daysSinceStart = Math.floor((now - firstDepositDate) / (1000 * 60 * 60 * 24));
+                document.getElementById('daysSinceStart').textContent = `${daysSinceStart} dias desde o primeiro depósito`;
             } else {
                 document.getElementById('daysSinceStart').textContent = `0 dias desde o início`;
             }
@@ -189,6 +194,7 @@
                 markedDeposits.clear();
                 saveLog();
                 generateDeposits();
+                updateDaysSinceStart(); // Atualiza a contagem de dias após reiniciar os depósitos
             }
         };
 

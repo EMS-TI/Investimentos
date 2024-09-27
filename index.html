@@ -3,126 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página de Login</title>
+    <title>Login</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            font-family: 'Arial', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
+            background-color: #282c34;
+            color: #fff;
         }
         .login-container {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #444;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
             width: 300px;
         }
-        .login-container h1 {
-            margin-bottom: 30px;
-            font-size: 26px;
-            text-align: center;
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
         }
-        .login-container input {
-            display: block;
+        input {
             width: 100%;
             padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        .login-container button {
-            padding: 10px;
-            background-color: #007bff;
-            color: #fff;
+            margin: 10px 0;
             border: none;
             border-radius: 5px;
-            cursor: pointer;
+            background-color: #555;
+            color: #fff;
+        }
+        input::placeholder {
+            color: #ccc;
+        }
+        button {
             width: 100%;
-            font-size: 16px;
-            margin-bottom: 10px;
+            padding: 8px; /* Diminuído para botões menores */
+            margin-top: 10px;
+            background-color: #008cba;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px; /* Diminuído para texto menor */
+            transition: background-color 0.3s;
         }
-        .login-container button:hover {
-            background-color: #0056b3;
+        button:hover {
+            background-color: #005f7f;
         }
-        .message {
-            text-align: center;
+        .error-message, .success-message {
+            margin-top: 10px;
             font-size: 14px;
-            color: #555;
-            margin-bottom: 20px;
+        }
+        .error-message {
+            color: red;
+        }
+        .success-message {
+            color: green;
         }
     </style>
 </head>
 <body>
-
     <div class="login-container">
-        <div class="message">Cadastre-se para iniciar seus depósitos</div>
         <h1>Login</h1>
-        <input type="text" id="username" placeholder="Usuário">
-        <input type="password" id="password" placeholder="Senha">
+        <p id="feedbackMessage" class="error-message"></p>
+        <input type="text" id="username" placeholder="Usuário" required>
+        <input type="password" id="password" placeholder="Senha" required>
         <button id="loginButton">Entrar</button>
         <button id="registerButton">Cadastrar</button>
         <button id="deleteButton">Excluir Usuário</button>
     </div>
 
     <script>
-        document.getElementById('loginButton').onclick = function() {
+        document.getElementById('loginButton').onclick = () => {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-
             const storedPassword = localStorage.getItem(username);
-            if (storedPassword && storedPassword === password) {
-                localStorage.setItem('currentUser', username);
-                localStorage.setItem('isLoggedIn', true);
-                window.location.href = "depositos.html"; 
+
+            const feedbackMessage = document.getElementById('feedbackMessage');
+
+            if (storedPassword === null) {
+                feedbackMessage.textContent = 'Usuário não existe.';
+                clearFields();
+            } else if (storedPassword !== password) {
+                feedbackMessage.textContent = 'Usuário ou senha incorretos.';
+                clearFields();
             } else {
-                alert("Usuário ou senha incorretos!");
+                localStorage.setItem('isLoggedIn', true);
+                localStorage.setItem('currentUser', username);
+                window.location.href = 'depositos.html';
             }
         };
 
-        document.getElementById('registerButton').onclick = function() {
+        document.getElementById('registerButton').onclick = () => {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            if (username && password) {
+            const feedbackMessage = document.getElementById('feedbackMessage');
+            const storedPassword = localStorage.getItem(username);
+
+            if (storedPassword) {
+                feedbackMessage.textContent = 'Usuário já existe.';
+            } else {
                 localStorage.setItem(username, password);
-                alert("Usuário cadastrado com sucesso!");
-            } else {
-                alert("Preencha todos os campos para cadastrar!");
+                feedbackMessage.textContent = 'Usuário cadastrado com sucesso!';
             }
         };
 
-        document.getElementById('deleteButton').onclick = function() {
+        document.getElementById('deleteButton').onclick = () => {
             const username = document.getElementById('username').value;
+            const storedPassword = localStorage.getItem(username);
+            const feedbackMessage = document.getElementById('feedbackMessage');
 
-            if (localStorage.getItem(username)) {
-                localStorage.removeItem(username);
-                localStorage.removeItem(`${username}_markedDeposits`); 
-                alert("Usuário excluído com sucesso!");
+            if (storedPassword === null) {
+                feedbackMessage.textContent = 'Usuário não existe.';
             } else {
-                alert("Usuário não encontrado!");
+                const confirmDelete = confirm(`Você tem certeza que deseja excluir o usuário "${username}"?`);
+                if (confirmDelete) {
+                    localStorage.removeItem(username);
+                    localStorage.removeItem(`markedDeposits_${username}`); // Remove depósitos do usuário
+                    feedbackMessage.textContent = 'Usuário excluído com sucesso.';
+                    clearFields(); // Limpa os campos após a exclusão
+                }
             }
         };
 
-        document.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                document.getElementById('loginButton').click();
-            }
-        });
-
-        window.onload = function() {
-            const isLoggedIn = localStorage.getItem('isLoggedIn');
-            const currentPage = window.location.pathname.split("/").pop();
-
-            if (currentPage === 'depositos.html' && !isLoggedIn) {
-                window.location.href = "index.html";
-            }
-        };
+        function clearFields() {
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
     </script>
-
 </body>
 </html>

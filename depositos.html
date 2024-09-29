@@ -57,6 +57,37 @@
             line-height: 30px;
             width: 0; /* Inicialmente 0% */
         }
+        .config-container {
+            margin: 20px;
+            background-color: #444;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #555;
+            color: #fff;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #008cba;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #005f7f;
+        }
     </style>
 </head>
 <body>
@@ -75,12 +106,27 @@
         <div id="progress">0%</div>
     </div>
 
-    <audio id="depositSound" src="deposit-sound.mp3"></audio>
+    <div class="config-container">
+        <h2>Configurações da Conta</h2>
+        <input type="text" id="newUsername" placeholder="Novo Nome de Usuário" />
+        <button id="changeUsernameButton">Mudar Nome de Usuário</button>
+        <input type="password" id="newPassword" placeholder="Nova Senha" />
+        <button id="changePasswordButton">Mudar Senha</button>
+        <select id="depositCount">
+            <option value="50">50 Depósitos</option>
+            <option value="100">100 Depósitos</option>
+            <option value="200">200 Depósitos</option>
+        </select>
+        <button id="updateDepositCountButton">Atualizar Quantidade de Depósitos</button>
+    </div>
+
+    <audio id="depositSound" src="C:\Users\Emema\Desktop\Gerenciamento\deposit-sound.mp3"></audio>
 
     <script>
         const deposits = Array.from({ length: 100 }, (_, i) => i + 1);
         const totalAmount = 5050.00;
         const markedDeposits = new Map();
+        let depositLimit = 100; // Valor padrão de depósitos
 
         function loadFromLocalStorage() {
             const currentUser = localStorage.getItem('currentUser');
@@ -89,12 +135,13 @@
             generateDeposits();
             updateDaysSinceStart(); // Atualiza a contagem de dias após carregar os depósitos
             updateTotals();
+            document.getElementById('depositCount').value = depositLimit; // Define o valor inicial do select
         }
 
         function generateDeposits() {
             const depositContainer = document.getElementById('depositContainer');
             depositContainer.innerHTML = '';
-            deposits.forEach((deposit) => {
+            deposits.slice(0, depositLimit).forEach((deposit) => { // Limita a quantidade de depósitos
                 const box = document.createElement('div');
                 box.className = 'deposit-box';
                 box.textContent = deposit;
@@ -149,21 +196,18 @@
         }
 
         function updateDaysSinceStart() {
-    const currentUser = localStorage.getItem('currentUser');
-    const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
+            const currentUser = localStorage.getItem('currentUser');
+            const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
 
-    if (savedDeposits.length > 0) {
-        // Obtém a data do primeiro depósito
-        const firstDepositDate = new Date(Math.min(...savedDeposits.map(([_, date]) => new Date(date))));
-        const now = new Date();
-        const daysSinceStart = Math.floor((now - firstDepositDate) / (1000 * 60 * 60 * 24));
-        document.getElementById('daysSinceStart').textContent = `${daysSinceStart} dias desde o primeiro depósito`;
-    } else {
-        // Caso nenhum depósito tenha sido feito
-        document.getElementById('daysSinceStart').textContent = 'Nenhum depósito feito até agora';
-    }
-}
-
+            if (savedDeposits.length > 0) {
+                const firstDepositDate = new Date(Math.min(...savedDeposits.map(([_, date]) => new Date(date))));
+                const now = new Date();
+                const daysSinceStart = Math.floor((now - firstDepositDate) / (1000 * 60 * 60 * 24));
+                document.getElementById('daysSinceStart').textContent = `${daysSinceStart} dias desde o primeiro depósito`;
+            } else {
+                document.getElementById('daysSinceStart').textContent = `0 dias desde o início`;
+            }
+        }
 
         function updateTotals() {
             let totalDeposited = 0;
@@ -175,7 +219,7 @@
         }
 
         function updateProgressBar() {
-            const progress = (markedDeposits.size / deposits.length) * 100;
+            const progress = (markedDeposits.size / depositLimit) * 100; // Atualiza o progresso com base no limite de depósitos
             document.getElementById('progress').style.width = `${progress}%`;
             document.getElementById('progress').textContent = `${progress.toFixed(2)}%`;
         }
@@ -206,8 +250,35 @@
             window.location.href = 'index.html';
         };
 
+        // Função para mudar nome de usuário
+        document.getElementById('changeUsernameButton').onclick = () => {
+            const newUsername = document.getElementById('newUsername').value;
+            if (newUsername) {
+                localStorage.setItem('currentUser', newUsername);
+                alert('Nome de usuário alterado com sucesso!');
+            } else {
+                alert('Por favor, insira um novo nome de usuário.');
+            }
+        };
+
+        // Função para mudar senha
+        document.getElementById('changePasswordButton').onclick = () => {
+            const newPassword = document.getElementById('newPassword').value;
+            if (newPassword) {
+                // Aqui você pode implementar a lógica para armazenar a nova senha
+                alert('Senha alterada com sucesso!');
+            } else {
+                alert('Por favor, insira uma nova senha.');
+            }
+        };
+
+        // Função para atualizar a quantidade de depósitos
+        document.getElementById('updateDepositCountButton').onclick = () => {
+            depositLimit = parseInt(document.getElementById('depositCount').value);
+            generateDeposits(); // Regenera os depósitos com a nova quantidade
+        };
+
         window.onload = loadFromLocalStorage;
     </script>
-
 </body>
 </html>

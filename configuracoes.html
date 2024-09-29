@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #555;
+            color: #fff;
+        }
+        button {
+            padding: 10px;
+            background-color: #008cba;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #005f7f;
+        }
+    </style>
+</head>
+<body>
+    <h1>Configurações</h1>
+    <h2>Mudar Nome de Usuário</h2>
+    <input type="text" id="newUsername" placeholder="Novo Nome de Usuário" />
+    <button id="changeUsernameButton">Mudar Nome</button>
+
+    <h2>Mudar Senha</h2>
+    <input type="password" id="newPassword" placeholder="Nova Senha" />
+    <button id="changePasswordButton">Mudar Senha</button>
+
+    <button id="backButton">Voltar para Depósitos</button>
+
+    <script>
+        document.getElementById('changeUsernameButton').onclick = () => {
+            const newUsername = document.getElementById('newUsername').value;
+            if (newUsername) {
+                localStorage.setItem('currentUser', newUsername);
+                alert('Nome de usuário alterado com sucesso!');
+            } else {
+                alert('Por favor, insira um novo nome de usuário.');
+            }
+        };
+
+        document.getElementById('changePasswordButton').onclick = () => {
+            const newPassword = document.getElementById('newPassword').value;
+            if (newPassword) {
+                alert('Senha alterada com sucesso!');
+            } else {
+                alert('Por favor, insira uma nova senha.');
+            }
+        };
+
+        document.getElementById('backButton').onclick = () => {
+            window.location.href = 'depositos.html'; // Redireciona para a página de depósitos
+        };
+    </script>
+</body>
+</html>

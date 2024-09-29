@@ -6,28 +6,22 @@
     <title>Login</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #282c34;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #000;
             color: #fff;
+            margin: 0;
+            padding: 0;
         }
         .login-container {
-            background-color: #444;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-            text-align: center;
             width: 300px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: #444;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        input {
+        input[type="text"], input[type="password"] {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
@@ -36,13 +30,8 @@
             background-color: #555;
             color: #fff;
         }
-        input::placeholder {
-            color: #ccc;
-        }
         button {
-            width: 100%;
-            padding: 8px;
-            margin-top: 10px;
+            padding: 10px;
             background-color: #008cba;
             border: none;
             border-radius: 5px;
@@ -50,72 +39,40 @@
             cursor: pointer;
             font-size: 14px;
             transition: background-color 0.3s;
+            width: 100%;
         }
         button:hover {
             background-color: #005f7f;
         }
-        .error-message {
-            margin-top: 10px;
-            font-size: 14px;
-            color: red;
+        a {
+            color: #008cba;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
     <div class="login-container">
         <h1>Login</h1>
-        <p id="feedbackMessage" class="error-message"></p>
-        <input type="text" id="username" placeholder="Usuário" required>
-        <input type="password" id="password" placeholder="Senha" required>
+        <input type="text" id="username" placeholder="Nome de Usuário" />
+        <input type="password" id="password" placeholder="Senha" />
         <button id="loginButton">Entrar</button>
-        <!-- Atualizado: Botão Cadastrar agora redireciona para a página de cadastro -->
-        <button id="registerButton" onclick="window.location.href='cadastro.html'">Cadastrar</button>
-        <button id="deleteButton">Excluir Usuário</button>
+        <p>Não tem uma conta? <a href="cadastro.html">Cadastrar</a></p>
     </div>
 
     <script>
         document.getElementById('loginButton').onclick = () => {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            const storedPassword = localStorage.getItem(username);
 
-            const feedbackMessage = document.getElementById('feedbackMessage');
-
-            if (storedPassword === null) {
-                feedbackMessage.textContent = 'Usuário não existe.';
-                clearFields();
-            } else if (storedPassword !== password) {
-                feedbackMessage.textContent = 'Usuário ou senha incorretos.';
-                clearFields();
-            } else {
-                localStorage.setItem('isLoggedIn', true);
+            // Simulação de login (substitua isso pela sua lógica de autenticação)
+            if (username && password) {
+                localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('currentUser', username);
-                window.location.href = 'depositos.html';
-            }
-        };
-
-        document.getElementById('deleteButton').onclick = () => {
-            const username = document.getElementById('username').value;
-            const storedPassword = localStorage.getItem(username);
-            const feedbackMessage = document.getElementById('feedbackMessage');
-
-            if (storedPassword === null) {
-                feedbackMessage.textContent = 'Usuário não existe.';
+                window.location.href = 'depositos.html'; // Redireciona para a página de depósitos
             } else {
-                const confirmDelete = confirm(`Você tem certeza que deseja excluir o usuário "${username}"?`);
-                if (confirmDelete) {
-                    localStorage.removeItem(username);
-                    localStorage.removeItem(`markedDeposits_${username}`);
-                    feedbackMessage.textContent = 'Usuário excluído com sucesso.';
-                    clearFields();
-                }
+                alert('Por favor, preencha todos os campos.');
             }
         };
-
-        function clearFields() {
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-        }
     </script>
 </body>
 </html>

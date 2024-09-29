@@ -13,9 +13,6 @@
             margin: 0;
             padding: 0;
         }
-        .menu {
-            margin: 20px;
-        }
         .deposit-box {
             display: inline-block;
             margin: 10px;
@@ -64,15 +61,13 @@
 </head>
 <body>
     <h1>Controle de Depósitos</h1>
-    <div class="menu">
-        <button id="resetButton">Reiniciar Depósitos</button>
-        <button id="logoutButton" style="background-color: red;">Sair</button>
-    </div>
     <p id="daysSinceStart">0 dias desde o primeiro depósito</p>
 
     <div class="total-info">
         <p>Total Depositado: R$ <span id="totalDeposited">0.00</span></p>
         <p>Faltam para completar os depósitos: R$ <span id="amountRemaining">5050.00</span></p>
+        <button id="resetButton">Reiniciar Depósitos</button>
+        <button id="logoutButton" style="background-color: red;">Sair</button>
     </div>
 
     <div id="depositContainer"></div>
@@ -83,17 +78,16 @@
     <audio id="depositSound" src="C:\Users\Emema\Desktop\Gerenciamento\deposit-sound.mp3"></audio>
 
     <script>
-        const deposits = Array.from({ length: 100 }, (_, i) => i + 1); // Supondo 100 depósitos
-        const totalAmount = 5050.00; // Total necessário
-        const depositValue = 50.00; // Valor de cada depósito
-        const markedDeposits = new Set(); // Usar um Set para gerenciar depósitos marcados
+        const deposits = Array.from({ length: 100 }, (_, i) => i + 1);
+        const totalAmount = 5050.00;
+        const markedDeposits = new Map();
 
         function loadFromLocalStorage() {
             const currentUser = localStorage.getItem('currentUser');
-            const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
-            savedDeposits.forEach(deposit => markedDeposits.add(deposit));
+            const savedDeposits = JSON.parse(localStorage.getItem(markedDeposits_${currentUser})) || [];
+            savedDeposits.forEach(([deposit, date]) => markedDeposits.set(deposit, date));
             generateDeposits();
-            updateDaysSinceStart();
+            updateDaysSinceStart(); // Atualiza a contagem de dias após carregar os depósitos
             updateTotals();
         }
 
@@ -111,7 +105,13 @@
 
                 box.onmouseenter = () => {
                     if (markedDeposits.has(deposit)) {
-                        tooltip.textContent = `Depositado`;
+                        const depositDate = new Date(markedDeposits.get(deposit));
+                        const formattedDate = depositDate.toLocaleDateString('pt-BR', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                        });
+                        tooltip.textContent = Data do depósito: ${formattedDate};
                         tooltip.style.display = 'block';
                     }
                 };
@@ -122,13 +122,21 @@
 
                 box.onclick = () => {
                     if (markedDeposits.has(deposit)) {
-                        markedDeposits.delete(deposit); // Remove depósito
-                        box.classList.remove('marked'); // Atualiza a UI
+                        const confirmation = confirm('Você tem certeza de que deseja retirar este depósito?');
+                        if (confirmation) {
+                            markedDeposits.delete(deposit);
+                            saveLog();
+                            generateDeposits();
+                        }
                     } else {
-                        markedDeposits.add(deposit); // Adiciona depósito
-                        box.classList.add('marked'); // Atualiza a UI
+                        const currentDate = new Date().toISOString();
+                        markedDeposits.set(deposit, currentDate);
+                        saveLog();
+                        generateDeposits();
+                        updateDaysSinceStart(); // Atualiza a contagem de dias após um novo depósito
                     }
-                    updateTotals(); // Atualiza totais instantaneamente
+                    updateProgressBar();
+                    playDepositSound();
                 };
 
                 if (markedDeposits.has(deposit)) {
@@ -136,39 +144,57 @@
                 }
                 depositContainer.appendChild(box);
             });
-        }
-
-        function updateTotals() {
-            const totalDeposited = markedDeposits.size * depositValue; // Cada depósito é de R$ 50,00
-            document.getElementById('totalDeposited').textContent = totalDeposited.toFixed(2);
-            const amountRemaining = totalAmount - totalDeposited;
-            document.getElementById('amountRemaining').textContent = amountRemaining.toFixed(2);
-            updateProgress(totalDeposited);
-        }
-
-        function updateProgress(total) {
-            const progressPercentage = (total / totalAmount) * 100;
-            document.getElementById('progress').style.width = `${progressPercentage}%`;
-            document.getElementById('progress').textContent = `${Math.round(progressPercentage)}%`;
+            updateTotals();
+            updateProgressBar();
         }
 
         function updateDaysSinceStart() {
-            const firstDepositDate = Array.from(markedDeposits).map(Number).sort((a, b) => a - b)[0];
-            if (firstDepositDate) {
-                const today = new Date();
-                const diffTime = Math.abs(today - new Date(firstDepositDate));
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                document.getElementById('daysSinceStart').textContent = `${diffDays} dias desde o primeiro depósito`;
+            const currentUser = localStorage.getItem('currentUser');
+            const savedDeposits = JSON.parse(localStorage.getItem(markedDeposits_${currentUser})) || [];
+
+            if (savedDeposits.length > 0) {
+                // Obtém a data do primeiro depósito
+                const firstDepositDate = new Date(Math.min(...savedDeposits.map(([_, date]) => new Date(date))));
+                const now = new Date();
+                const daysSinceStart = Math.floor((now - firstDepositDate) / (1000 * 60 * 60 * 24));
+                document.getElementById('daysSinceStart').textContent = ${daysSinceStart} dias desde o primeiro depósito;
+            } else {
+                document.getElementById('daysSinceStart').textContent = 0 dias desde o início;
             }
         }
 
+        function updateTotals() {
+            let totalDeposited = 0;
+            markedDeposits.forEach((_, key) => totalDeposited += key);
+            const amountRemaining = totalAmount - totalDeposited;
+
+            document.getElementById('totalDeposited').textContent = totalDeposited.toFixed(2);
+            document.getElementById('amountRemaining').textContent = amountRemaining.toFixed(2);
+        }
+
+        function updateProgressBar() {
+            const progress = (markedDeposits.size / deposits.length) * 100;
+            document.getElementById('progress').style.width = ${progress}%;
+            document.getElementById('progress').textContent = ${progress.toFixed(2)}%;
+        }
+
+        function saveLog() {
+            const currentUser = localStorage.getItem('currentUser');
+            localStorage.setItem(markedDeposits_${currentUser}, JSON.stringify(Array.from(markedDeposits.entries())));
+        }
+
+        function playDepositSound() {
+            const depositSound = document.getElementById('depositSound');
+            depositSound.play();
+        }
+
         document.getElementById('resetButton').onclick = () => {
-            const confirmation = confirm('Você tem certeza que deseja reiniciar todos os depósitos?');
+            const confirmation = confirm('Tem certeza de que deseja reiniciar os depósitos?');
             if (confirmation) {
                 markedDeposits.clear();
-                localStorage.removeItem(`markedDeposits_${localStorage.getItem('currentUser')}`);
-                updateTotals();
+                saveLog();
                 generateDeposits();
+                updateDaysSinceStart(); // Atualiza a contagem de dias após reiniciar os depósitos
             }
         };
 
@@ -178,7 +204,8 @@
             window.location.href = 'index.html';
         };
 
-        loadFromLocalStorage();
+        window.onload = loadFromLocalStorage;
     </script>
+
 </body>
 </html>

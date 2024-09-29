@@ -6,22 +6,28 @@
     <title>Login</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #000;
-            color: #fff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            padding: 0;
+            background-color: #282c34;
+            color: #fff;
         }
         .login-container {
-            width: 300px;
-            margin: 100px auto;
-            padding: 20px;
             background-color: #444;
+            padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            width: 300px;
         }
-        input[type="text"], input[type="password"] {
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        input {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
@@ -30,28 +36,33 @@
             background-color: #555;
             color: #fff;
         }
+        input::placeholder {
+            color: #ccc;
+        }
         button {
-            padding: 10px;
+            width: 100%;
+            padding: 8px; /* Diminuído para botões menores */
+            margin-top: 10px;
             background-color: #008cba;
             border: none;
             border-radius: 5px;
             color: white;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 14px; /* Diminuído para texto menor */
             transition: background-color 0.3s;
-            width: 100%;
         }
         button:hover {
             background-color: #005f7f;
         }
-        a {
-            color: #008cba;
-            text-decoration: none;
+        .error-message, .success-message {
+            margin-top: 10px;
+            font-size: 14px;
         }
         .error-message {
             color: red;
-            margin-top: 10px;
-            font-size: 14px;
+        }
+        .success-message {
+            color: green;
         }
     </style>
 </head>
@@ -59,11 +70,11 @@
     <div class="login-container">
         <h1>Login</h1>
         <p id="feedbackMessage" class="error-message"></p>
-        <input type="text" id="username" placeholder="Nome de Usuário" />
-        <input type="password" id="password" placeholder="Senha" />
+        <input type="text" id="username" placeholder="Usuário" required>
+        <input type="password" id="password" placeholder="Senha" required>
         <button id="loginButton">Entrar</button>
-        <button id="registerButton" style="background-color: green;">Cadastrar</button>
-        <button id="deleteButton" style="background-color: red;">Excluir Usuário</button>
+        <button id="registerButton">Cadastrar</button>
+        <button id="deleteButton">Excluir Usuário</button>
     </div>
 
     <script>
@@ -81,7 +92,7 @@
                 feedbackMessage.textContent = 'Usuário ou senha incorretos.';
                 clearFields();
             } else {
-                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('isLoggedIn', true);
                 localStorage.setItem('currentUser', username);
                 window.location.href = 'depositos.html';
             }
@@ -110,10 +121,10 @@
             if (storedPassword === null) {
                 feedbackMessage.textContent = 'Usuário não existe.';
             } else {
-                const confirmDelete = confirm(`Você tem certeza que deseja excluir o usuário "${username}"?`);
+                const confirmDelete = confirm(Você tem certeza que deseja excluir o usuário "${username}"?);
                 if (confirmDelete) {
                     localStorage.removeItem(username);
-                    localStorage.removeItem(`markedDeposits_${username}`); // Remove depósitos do usuário
+                    localStorage.removeItem(markedDeposits_${username}); // Remove depósitos do usuário
                     feedbackMessage.textContent = 'Usuário excluído com sucesso.';
                     clearFields(); // Limpa os campos após a exclusão
                 }
@@ -123,7 +134,6 @@
         function clearFields() {
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
-            document.getElementById('feedbackMessage').textContent = ''; // Limpa a mensagem de feedback
         }
     </script>
 </body>

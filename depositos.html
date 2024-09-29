@@ -85,6 +85,7 @@
     <script>
         const deposits = Array.from({ length: 100 }, (_, i) => i + 1); // Supondo 100 depósitos
         const totalAmount = 5050.00; // Total necessário
+        const depositValue = 50.00; // Valor de cada depósito
         const markedDeposits = new Map();
 
         function loadFromLocalStorage() {
@@ -150,7 +151,7 @@
         }
 
         function updateTotals() {
-            const totalDeposited = markedDeposits.size * 50.00; // Cada depósito é de R$ 50,00
+            const totalDeposited = markedDeposits.size * depositValue; // Cada depósito é de R$ 50,00
             document.getElementById('totalDeposited').textContent = totalDeposited.toFixed(2);
             const amountRemaining = totalAmount - totalDeposited;
             document.getElementById('amountRemaining').textContent = amountRemaining.toFixed(2);

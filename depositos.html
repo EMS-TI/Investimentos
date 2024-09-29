@@ -86,12 +86,12 @@
         const deposits = Array.from({ length: 100 }, (_, i) => i + 1); // Supondo 100 depósitos
         const totalAmount = 5050.00; // Total necessário
         const depositValue = 50.00; // Valor de cada depósito
-        const markedDeposits = new Map();
+        const markedDeposits = new Set(); // Usar um Set para gerenciar depósitos marcados
 
         function loadFromLocalStorage() {
             const currentUser = localStorage.getItem('currentUser');
             const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
-            savedDeposits.forEach(([deposit, date]) => markedDeposits.set(deposit, date));
+            savedDeposits.forEach(deposit => markedDeposits.add(deposit));
             generateDeposits();
             updateDaysSinceStart();
             updateTotals();
@@ -111,13 +111,7 @@
 
                 box.onmouseenter = () => {
                     if (markedDeposits.has(deposit)) {
-                        const depositDate = new Date(markedDeposits.get(deposit));
-                        const formattedDate = depositDate.toLocaleDateString('pt-BR', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric'
-                        });
-                        tooltip.textContent = `Data do depósito: ${formattedDate}`;
+                        tooltip.textContent = `Depositado`;
                         tooltip.style.display = 'block';
                     }
                 };
@@ -128,19 +122,13 @@
 
                 box.onclick = () => {
                     if (markedDeposits.has(deposit)) {
-                        const confirmation = confirm('Você deseja remover este depósito?');
-                        if (confirmation) {
-                            markedDeposits.delete(deposit);
-                            updateTotals();
-                            localStorage.setItem(`markedDeposits_${localStorage.getItem('currentUser')}`, JSON.stringify(Array.from(markedDeposits.entries())));
-                        }
+                        markedDeposits.delete(deposit); // Remove depósito
+                        box.classList.remove('marked'); // Atualiza a UI
                     } else {
-                        markedDeposits.set(deposit, new Date().toISOString());
-                        updateTotals();
-                        localStorage.setItem(`markedDeposits_${localStorage.getItem('currentUser')}`, JSON.stringify(Array.from(markedDeposits.entries())));
-                        document.getElementById('depositSound').play();
+                        markedDeposits.add(deposit); // Adiciona depósito
+                        box.classList.add('marked'); // Atualiza a UI
                     }
-                    box.classList.toggle('marked');
+                    updateTotals(); // Atualiza totais instantaneamente
                 };
 
                 if (markedDeposits.has(deposit)) {
@@ -165,10 +153,10 @@
         }
 
         function updateDaysSinceStart() {
-            const firstDepositDate = Array.from(markedDeposits.values()).map(date => new Date(date))[0];
+            const firstDepositDate = Array.from(markedDeposits).map(Number).sort((a, b) => a - b)[0];
             if (firstDepositDate) {
                 const today = new Date();
-                const diffTime = Math.abs(today - firstDepositDate);
+                const diffTime = Math.abs(today - new Date(firstDepositDate));
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 document.getElementById('daysSinceStart').textContent = `${diffDays} dias desde o primeiro depósito`;
             }

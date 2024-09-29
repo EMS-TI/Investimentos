@@ -149,19 +149,21 @@
         }
 
         function updateDaysSinceStart() {
-            const currentUser = localStorage.getItem('currentUser');
-            const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
+    const currentUser = localStorage.getItem('currentUser');
+    const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
 
-            if (savedDeposits.length > 0) {
-                // Obtém a data do primeiro depósito
-                const firstDepositDate = new Date(Math.min(...savedDeposits.map(([_, date]) => new Date(date))));
-                const now = new Date();
-                const daysSinceStart = Math.floor((now - firstDepositDate) / (1000 * 60 * 60 * 24));
-                document.getElementById('daysSinceStart').textContent = `${daysSinceStart} dias desde o primeiro depósito`;
-            } else {
-                document.getElementById('daysSinceStart').textContent = `0 dias desde o início`;
-            }
-        }
+    if (savedDeposits.length > 0) {
+        // Obtém a data do primeiro depósito
+        const firstDepositDate = new Date(Math.min(...savedDeposits.map(([_, date]) => new Date(date))));
+        const now = new Date();
+        const daysSinceStart = Math.floor((now - firstDepositDate) / (1000 * 60 * 60 * 24));
+        document.getElementById('daysSinceStart').textContent = `${daysSinceStart} dias desde o primeiro depósito`;
+    } else {
+        // Caso nenhum depósito tenha sido feito
+        document.getElementById('daysSinceStart').textContent = 'Nenhum depósito feito até agora';
+    }
+}
+
 
         function updateTotals() {
             let totalDeposited = 0;

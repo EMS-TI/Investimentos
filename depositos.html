@@ -84,7 +84,7 @@
 
         function loadFromLocalStorage() {
             const currentUser = localStorage.getItem('currentUser');
-            const savedDeposits = JSON.parse(localStorage.getItem(markedDeposits_${currentUser})) || [];
+            const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
             savedDeposits.forEach(([deposit, date]) => markedDeposits.set(deposit, date));
             generateDeposits();
             updateDaysSinceStart(); // Atualiza a contagem de dias após carregar os depósitos
@@ -111,7 +111,7 @@
                             month: '2-digit',
                             year: 'numeric'
                         });
-                        tooltip.textContent = Data do depósito: ${formattedDate};
+                        tooltip.textContent = `Data do depósito: ${formattedDate}`;
                         tooltip.style.display = 'block';
                     }
                 };
@@ -150,16 +150,16 @@
 
         function updateDaysSinceStart() {
             const currentUser = localStorage.getItem('currentUser');
-            const savedDeposits = JSON.parse(localStorage.getItem(markedDeposits_${currentUser})) || [];
+            const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
 
             if (savedDeposits.length > 0) {
                 // Obtém a data do primeiro depósito
                 const firstDepositDate = new Date(Math.min(...savedDeposits.map(([_, date]) => new Date(date))));
                 const now = new Date();
                 const daysSinceStart = Math.floor((now - firstDepositDate) / (1000 * 60 * 60 * 24));
-                document.getElementById('daysSinceStart').textContent = ${daysSinceStart} dias desde o primeiro depósito;
+                document.getElementById('daysSinceStart').textContent = `${daysSinceStart} dias desde o primeiro depósito`;
             } else {
-                document.getElementById('daysSinceStart').textContent = 0 dias desde o início;
+                document.getElementById('daysSinceStart').textContent = `0 dias desde o início`;
             }
         }
 
@@ -174,13 +174,13 @@
 
         function updateProgressBar() {
             const progress = (markedDeposits.size / deposits.length) * 100;
-            document.getElementById('progress').style.width = ${progress}%;
-            document.getElementById('progress').textContent = ${progress.toFixed(2)}%;
+            document.getElementById('progress').style.width = `${progress}%`;
+            document.getElementById('progress').textContent = `${progress.toFixed(2)}%`;
         }
 
         function saveLog() {
             const currentUser = localStorage.getItem('currentUser');
-            localStorage.setItem(markedDeposits_${currentUser}, JSON.stringify(Array.from(markedDeposits.entries())));
+            localStorage.setItem(`markedDeposits_${currentUser}`, JSON.stringify(Array.from(markedDeposits.entries())));
         }
 
         function playDepositSound() {

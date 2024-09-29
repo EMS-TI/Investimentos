@@ -21,27 +21,30 @@
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
             text-align: center;
-            width: 300px;
+            width: 350px; /* Aumentado para mais espaço */
         }
         h1 {
             font-size: 24px;
             margin-bottom: 20px;
+            color: #008cba; /* Cor do título */
         }
         input {
             width: 100%;
-            padding: 10px;
+            padding: 12px; /* Aumentado para mais conforto */
             margin: 10px 0;
-            border: none;
+            border: 2px solid #008cba; /* Borda mais destacada */
             border-radius: 5px;
             background-color: #f0f0f0;
             color: #333;
+            transition: border-color 0.3s; /* Transição suave na borda */
         }
-        input::placeholder {
-            color: #ccc;
+        input:focus {
+            border-color: #005f7f; /* Mudança de cor ao focar */
+            outline: none; /* Remove o contorno padrão */
         }
         button {
             width: 100%;
-            padding: 8px; 
+            padding: 10px; 
             margin-top: 10px;
             background-color: #008cba;
             border: none;

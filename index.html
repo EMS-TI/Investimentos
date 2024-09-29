@@ -12,13 +12,13 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #282c34;
-            color: #fff;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: #333;
         }
         .login-container {
-            background-color: #444;
-            padding: 20px;
-            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
             text-align: center;
             width: 300px;
@@ -33,36 +33,49 @@
             margin: 10px 0;
             border: none;
             border-radius: 5px;
-            background-color: #555;
-            color: #fff;
+            background-color: #f0f0f0;
+            color: #333;
         }
         input::placeholder {
             color: #ccc;
         }
         button {
             width: 100%;
-            padding: 8px; /* Diminuído para botões menores */
+            padding: 8px; 
             margin-top: 10px;
             background-color: #008cba;
             border: none;
             border-radius: 5px;
             color: white;
             cursor: pointer;
-            font-size: 14px; /* Diminuído para texto menor */
-            transition: background-color 0.3s;
+            font-size: 14px; 
+            transition: background-color 0.3s, transform 0.2s;
         }
         button:hover {
             background-color: #005f7f;
+            transform: scale(1.05);
         }
         .error-message, .success-message {
             margin-top: 10px;
             font-size: 14px;
+            display: none; /* Escondido inicialmente */
         }
         .error-message {
             color: red;
         }
         .success-message {
             color: green;
+        }
+        .link-container {
+            margin-top: 15px;
+        }
+        .link-container a {
+            color: #008cba;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .link-container a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -75,6 +88,9 @@
         <button id="loginButton">Entrar</button>
         <button id="registerButton">Cadastrar</button>
         <button id="deleteButton">Excluir Usuário</button>
+        <div class="link-container">
+            <a href="#" id="forgotPasswordLink">Esqueci minha senha</a>
+        </div>
     </div>
 
     <script>
@@ -87,14 +103,21 @@
 
             if (storedPassword === null) {
                 feedbackMessage.textContent = 'Usuário não existe.';
+                feedbackMessage.style.display = 'block'; // Exibe a mensagem de erro
                 clearFields();
             } else if (storedPassword !== password) {
                 feedbackMessage.textContent = 'Usuário ou senha incorretos.';
+                feedbackMessage.style.display = 'block'; // Exibe a mensagem de erro
                 clearFields();
             } else {
+                feedbackMessage.textContent = 'Login bem-sucedido!';
+                feedbackMessage.classList.add('success-message');
+                feedbackMessage.style.display = 'block'; // Exibe a mensagem de sucesso
                 localStorage.setItem('isLoggedIn', true);
                 localStorage.setItem('currentUser', username);
-                window.location.href = 'depositos.html';
+                setTimeout(() => {
+                    window.location.href = 'depositos.html';
+                }, 1000); // Redireciona após 1 segundo
             }
         };
 
@@ -107,9 +130,13 @@
 
             if (storedPassword) {
                 feedbackMessage.textContent = 'Usuário já existe.';
+                feedbackMessage.style.display = 'block'; // Exibe a mensagem de erro
             } else {
                 localStorage.setItem(username, password);
                 feedbackMessage.textContent = 'Usuário cadastrado com sucesso!';
+                feedbackMessage.classList.add('success-message');
+                feedbackMessage.style.display = 'block'; // Exibe a mensagem de sucesso
+                clearFields();
             }
         };
 
@@ -120,12 +147,15 @@
 
             if (storedPassword === null) {
                 feedbackMessage.textContent = 'Usuário não existe.';
+                feedbackMessage.style.display = 'block'; // Exibe a mensagem de erro
             } else {
                 const confirmDelete = confirm(`Você tem certeza que deseja excluir o usuário "${username}"?`);
                 if (confirmDelete) {
                     localStorage.removeItem(username);
                     localStorage.removeItem(`markedDeposits_${username}`); // Remove depósitos do usuário
                     feedbackMessage.textContent = 'Usuário excluído com sucesso.';
+                    feedbackMessage.classList.add('success-message');
+                    feedbackMessage.style.display = 'block'; // Exibe a mensagem de sucesso
                     clearFields(); // Limpa os campos após a exclusão
                 }
             }
@@ -135,6 +165,11 @@
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
         }
+
+        // Exibir senha ao clicar no link
+        document.getElementById('forgotPasswordLink').onclick = () => {
+            alert("Entre em contato com o suporte para redefinir sua senha.");
+        };
     </script>
 </body>
 </html>

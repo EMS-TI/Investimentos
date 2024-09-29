@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #282c34;
+            color: #fff;
+        }
+        .register-container {
+            background-color: #444;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            width: 300px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #555;
+            color: #fff;
+        }
+        input::placeholder {
+            color: #ccc;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #008cba;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #005f7f;
+        }
+        .toggle-password {
+            cursor: pointer;
+            color: #ccc;
+            float: right;
+            margin-right: 10px;
+            font-size: 12px;
+        }
+        .error-message, .success-message {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .error-message {
+            color: red;
+        }
+        .success-message {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h1>Cadastrar</h1>
+        <p id="feedbackMessage" class="error-message"></p>
+        <input type="text" id="username" placeholder="Nome de usuário" required>
+        <input type="password" id="password" placeholder="Senha" required>
+        <span class="toggle-password" onclick="togglePassword()">Mostrar Senha</span>
+        <button id="registerButton">Finalizar Cadastro</button>
+    </div>
+
+    <script>
+        // Função para alternar entre mostrar e esconder a senha
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
+        }
+
+        document.getElementById('registerButton').onclick = () => {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const feedbackMessage = document.getElementById('feedbackMessage');
+
+            // Verifica se os campos estão preenchidos
+            if (username === '' || password === '') {
+                feedbackMessage.textContent = 'Preencha todos os campos.';
+                return;
+            }
+
+            const storedPassword = localStorage.getItem(username);
+
+            if (storedPassword) {
+                feedbackMessage.textContent = 'Usuário já existe.';
+            } else {
+                localStorage.setItem(username, password);
+                feedbackMessage.textContent = 'Usuário cadastrado com sucesso!';
+                setTimeout(() => {
+                    window.location.href = 'index.html'; // Redireciona de volta à página de login
+                }, 1000); // Aguarda 1 segundo antes de redirecionar
+            }
+        };
+    </script>
+</body>
+</html>

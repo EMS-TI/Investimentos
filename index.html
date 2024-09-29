@@ -41,28 +41,23 @@
         }
         button {
             width: 100%;
-            padding: 8px; /* Diminuído para botões menores */
+            padding: 8px;
             margin-top: 10px;
             background-color: #008cba;
             border: none;
             border-radius: 5px;
             color: white;
             cursor: pointer;
-            font-size: 14px; /* Diminuído para texto menor */
+            font-size: 14px;
             transition: background-color 0.3s;
         }
         button:hover {
             background-color: #005f7f;
         }
-        .error-message, .success-message {
+        .error-message {
             margin-top: 10px;
             font-size: 14px;
-        }
-        .error-message {
             color: red;
-        }
-        .success-message {
-            color: green;
         }
     </style>
 </head>
@@ -73,7 +68,8 @@
         <input type="text" id="username" placeholder="Usuário" required>
         <input type="password" id="password" placeholder="Senha" required>
         <button id="loginButton">Entrar</button>
-        <button id="registerButton">Cadastrar</button>
+        <!-- Atualizado: Botão Cadastrar agora redireciona para a página de cadastro -->
+        <button id="registerButton" onclick="window.location.href='cadastro.html'">Cadastrar</button>
         <button id="deleteButton">Excluir Usuário</button>
     </div>
 
@@ -98,21 +94,6 @@
             }
         };
 
-        document.getElementById('registerButton').onclick = () => {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-
-            const feedbackMessage = document.getElementById('feedbackMessage');
-            const storedPassword = localStorage.getItem(username);
-
-            if (storedPassword) {
-                feedbackMessage.textContent = 'Usuário já existe.';
-            } else {
-                localStorage.setItem(username, password);
-                feedbackMessage.textContent = 'Usuário cadastrado com sucesso!';
-            }
-        };
-
         document.getElementById('deleteButton').onclick = () => {
             const username = document.getElementById('username').value;
             const storedPassword = localStorage.getItem(username);
@@ -124,9 +105,9 @@
                 const confirmDelete = confirm(`Você tem certeza que deseja excluir o usuário "${username}"?`);
                 if (confirmDelete) {
                     localStorage.removeItem(username);
-                    localStorage.removeItem(`markedDeposits_${username}`); // Remove depósitos do usuário
+                    localStorage.removeItem(`markedDeposits_${username}`);
                     feedbackMessage.textContent = 'Usuário excluído com sucesso.';
-                    clearFields(); // Limpa os campos após a exclusão
+                    clearFields();
                 }
             }
         };

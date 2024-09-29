@@ -63,8 +63,9 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            display: none; /* Inicialmente oculto */
         }
-        input, select {
+        input {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
@@ -88,6 +89,14 @@
         button:hover {
             background-color: #005f7f;
         }
+        .menu {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .menu button {
+            margin: 0 5px;
+        }
     </style>
 </head>
 <body>
@@ -106,18 +115,18 @@
         <div id="progress">0%</div>
     </div>
 
-    <div class="config-container">
+    <div class="menu">
+        <button id="configButton">Configurações</button>
+        <button id="resetButton">Reiniciar Depósitos</button>
+        <button id="logoutButton" style="background-color: red;">Sair</button>
+    </div>
+
+    <div class="config-container" id="configContainer">
         <h2>Configurações da Conta</h2>
         <input type="text" id="newUsername" placeholder="Novo Nome de Usuário" />
         <button id="changeUsernameButton">Mudar Nome de Usuário</button>
         <input type="password" id="newPassword" placeholder="Nova Senha" />
         <button id="changePasswordButton">Mudar Senha</button>
-        <select id="depositCount">
-            <option value="50">50 Depósitos</option>
-            <option value="100">100 Depósitos</option>
-            <option value="200">200 Depósitos</option>
-        </select>
-        <button id="updateDepositCountButton">Atualizar Quantidade de Depósitos</button>
     </div>
 
     <audio id="depositSound" src="C:\Users\Emema\Desktop\Gerenciamento\deposit-sound.mp3"></audio>
@@ -135,7 +144,6 @@
             generateDeposits();
             updateDaysSinceStart(); // Atualiza a contagem de dias após carregar os depósitos
             updateTotals();
-            document.getElementById('depositCount').value = depositLimit; // Define o valor inicial do select
         }
 
         function generateDeposits() {
@@ -250,6 +258,11 @@
             window.location.href = 'index.html';
         };
 
+        document.getElementById('configButton').onclick = () => {
+            const configContainer = document.getElementById('configContainer');
+            configContainer.style.display = configContainer.style.display === 'none' ? 'block' : 'none';
+        };
+
         // Função para mudar nome de usuário
         document.getElementById('changeUsernameButton').onclick = () => {
             const newUsername = document.getElementById('newUsername').value;
@@ -265,17 +278,10 @@
         document.getElementById('changePasswordButton').onclick = () => {
             const newPassword = document.getElementById('newPassword').value;
             if (newPassword) {
-                // Aqui você pode implementar a lógica para armazenar a nova senha
                 alert('Senha alterada com sucesso!');
             } else {
                 alert('Por favor, insira uma nova senha.');
             }
-        };
-
-        // Função para atualizar a quantidade de depósitos
-        document.getElementById('updateDepositCountButton').onclick = () => {
-            depositLimit = parseInt(document.getElementById('depositCount').value);
-            generateDeposits(); // Regenera os depósitos com a nova quantidade
         };
 
         window.onload = loadFromLocalStorage;

@@ -13,6 +13,9 @@
             margin: 0;
             padding: 0;
         }
+        .menu {
+            margin: 20px;
+        }
         .deposit-box {
             display: inline-block;
             margin: 10px;
@@ -24,6 +27,16 @@
         }
         .marked {
             background-color: #008000; /* Verde para depósitos marcados */
+        }
+        .tooltip {
+            position: absolute;
+            background-color: #fff;
+            color: #000;
+            padding: 5px;
+            border-radius: 5px;
+            display: none;
+            white-space: nowrap;
+            z-index: 10;
         }
         .total-info {
             margin: 20px;
@@ -51,14 +64,15 @@
 </head>
 <body>
     <h1>Controle de Depósitos</h1>
+    <div class="menu">
+        <button id="resetButton">Reiniciar Depósitos</button>
+        <button id="logoutButton" style="background-color: red;">Sair</button>
+    </div>
     <p id="daysSinceStart">0 dias desde o primeiro depósito</p>
 
     <div class="total-info">
         <p>Total Depositado: R$ <span id="totalDeposited">0.00</span></p>
-        <p>Faltam para completar os depósitos: R$ <span id="amountRemaining">0.00</span></p>
-        <button id="resetButton">Reiniciar Depósitos</button>
-        <button id="configButton">Configurações</button>
-        <button id="logoutButton" style="background-color: red;">Sair</button>
+        <p>Faltam para completar os depósitos: R$ <span id="amountRemaining">5050.00</span></p>
     </div>
 
     <div id="depositContainer"></div>
@@ -66,8 +80,11 @@
         <div id="progress">0%</div>
     </div>
 
+    <audio id="depositSound" src="C:\Users\Emema\Desktop\Gerenciamento\deposit-sound.mp3"></audio>
+
     <script>
-        const deposits = Array.from({ length: 100 }, (_, i) => i + 1);
+        const deposits = Array.from({ length: 100 }, (_, i) => i + 1); // Supondo 100 depósitos
+        const totalAmount = 5050.00; // Total necessário
         const markedDeposits = new Map();
 
         function loadFromLocalStorage() {
@@ -87,21 +104,42 @@
                 box.className = 'deposit-box';
                 box.textContent = deposit;
 
+                const tooltip = document.createElement('div');
+                tooltip.className = 'tooltip';
+                box.appendChild(tooltip);
+
+                box.onmouseenter = () => {
+                    if (markedDeposits.has(deposit)) {
+                        const depositDate = new Date(markedDeposits.get(deposit));
+                        const formattedDate = depositDate.toLocaleDateString('pt-BR', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                        });
+                        tooltip.textContent = `Data do depósito: ${formattedDate}`;
+                        tooltip.style.display = 'block';
+                    }
+                };
+
+                box.onmouseleave = () => {
+                    tooltip.style.display = 'none';
+                };
+
                 box.onclick = () => {
                     if (markedDeposits.has(deposit)) {
-                        const confirmation = confirm('Você tem certeza de que deseja retirar este depósito?');
+                        const confirmation = confirm('Você deseja remover este depósito?');
                         if (confirmation) {
                             markedDeposits.delete(deposit);
-                            saveLog();
-                            generateDeposits();
+                            updateTotals();
+                            localStorage.setItem(`markedDeposits_${localStorage.getItem('currentUser')}`, JSON.stringify(Array.from(markedDeposits.entries())));
                         }
                     } else {
-                        const currentDate = new Date().toISOString();
-                        markedDeposits.set(deposit, currentDate);
-                        saveLog();
-                        generateDeposits();
-                        updateDaysSinceStart();
+                        markedDeposits.set(deposit, new Date().toISOString());
+                        updateTotals();
+                        localStorage.setItem(`markedDeposits_${localStorage.getItem('currentUser')}`, JSON.stringify(Array.from(markedDeposits.entries())));
+                        document.getElementById('depositSound').play();
                     }
+                    box.classList.toggle('marked');
                 };
 
                 if (markedDeposits.has(deposit)) {
@@ -109,52 +147,39 @@
                 }
                 depositContainer.appendChild(box);
             });
-            updateTotals();
-            updateProgressBar();
-        }
-
-        function updateDaysSinceStart() {
-            const currentUser = localStorage.getItem('currentUser');
-            const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
-
-            if (savedDeposits.length > 0) {
-                const firstDepositDate = new Date(Math.min(...savedDeposits.map(([_, date]) => new Date(date))));
-                const now = new Date();
-                const daysSinceStart = Math.floor((now - firstDepositDate) / (1000 * 60 * 60 * 24));
-                document.getElementById('daysSinceStart').textContent = `${daysSinceStart} dias desde o primeiro depósito`;
-            } else {
-                document.getElementById('daysSinceStart').textContent = `0 dias desde o início`;
-            }
         }
 
         function updateTotals() {
-            let totalDeposited = 0;
-            markedDeposits.forEach((_, key) => totalDeposited += key);
-            const totalAmount = parseInt(localStorage.getItem('depositCount') || '100'); // Pega a quantidade de depósitos
-            const amountRemaining = totalAmount - totalDeposited;
-
+            const totalDeposited = markedDeposits.size * 50.00; // Cada depósito é de R$ 50,00
             document.getElementById('totalDeposited').textContent = totalDeposited.toFixed(2);
+            const amountRemaining = totalAmount - totalDeposited;
             document.getElementById('amountRemaining').textContent = amountRemaining.toFixed(2);
+            updateProgress(totalDeposited);
         }
 
-        function updateProgressBar() {
-            const progress = (markedDeposits.size / deposits.length) * 100;
-            document.getElementById('progress').style.width = `${progress}%`;
-            document.getElementById('progress').textContent = `${progress.toFixed(2)}%`;
+        function updateProgress(total) {
+            const progressPercentage = (total / totalAmount) * 100;
+            document.getElementById('progress').style.width = `${progressPercentage}%`;
+            document.getElementById('progress').textContent = `${Math.round(progressPercentage)}%`;
         }
 
-        function saveLog() {
-            const currentUser = localStorage.getItem('currentUser');
-            localStorage.setItem(`markedDeposits_${currentUser}`, JSON.stringify(Array.from(markedDeposits.entries())));
+        function updateDaysSinceStart() {
+            const firstDepositDate = Array.from(markedDeposits.values()).map(date => new Date(date))[0];
+            if (firstDepositDate) {
+                const today = new Date();
+                const diffTime = Math.abs(today - firstDepositDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                document.getElementById('daysSinceStart').textContent = `${diffDays} dias desde o primeiro depósito`;
+            }
         }
 
         document.getElementById('resetButton').onclick = () => {
-            const confirmation = confirm('Tem certeza de que deseja reiniciar os depósitos?');
+            const confirmation = confirm('Você tem certeza que deseja reiniciar todos os depósitos?');
             if (confirmation) {
                 markedDeposits.clear();
-                saveLog();
+                localStorage.removeItem(`markedDeposits_${localStorage.getItem('currentUser')}`);
+                updateTotals();
                 generateDeposits();
-                updateDaysSinceStart();
             }
         };
 
@@ -164,12 +189,7 @@
             window.location.href = 'index.html';
         };
 
-        document.getElementById('configButton').onclick = () => {
-            window.location.href = 'configuracoes.html'; // Redireciona para a nova página de configurações
-        };
-
-        window.onload = loadFromLocalStorage;
+        loadFromLocalStorage();
     </script>
-
 </body>
 </html>

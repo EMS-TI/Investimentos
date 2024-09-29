@@ -62,7 +62,7 @@
         <input type="text" id="username" placeholder="Nome de Usuário" />
         <input type="password" id="password" placeholder="Senha" />
         <button id="loginButton">Entrar</button>
-        <p>Não tem uma conta? <a href="cadastro.html">Cadastrar</a></p>
+        <button id="registerButton" style="background-color: green;">Cadastrar</button>
         <button id="deleteButton" style="background-color: red;">Excluir Usuário</button>
     </div>
 
@@ -84,6 +84,21 @@
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('currentUser', username);
                 window.location.href = 'depositos.html';
+            }
+        };
+
+        document.getElementById('registerButton').onclick = () => {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const feedbackMessage = document.getElementById('feedbackMessage');
+            const storedPassword = localStorage.getItem(username);
+
+            if (storedPassword) {
+                feedbackMessage.textContent = 'Usuário já existe.';
+            } else {
+                localStorage.setItem(username, password);
+                feedbackMessage.textContent = 'Usuário cadastrado com sucesso!';
             }
         };
 

@@ -4,70 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle de Depósitos</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #000;
-            color: #fff;
-            margin: 0;
-            padding: 0;
-        }
-        .deposit-box {
-            display: inline-block;
-            margin: 10px;
-            padding: 10px;
-            background-color: #444;
-            border: 1px solid #fff;
-            cursor: pointer;
-            position: relative;
-        }
-        .marked {
-            background-color: #008000; /* Verde para depósitos marcados */
-        }
-        .tooltip {
-            position: absolute;
-            background-color: #fff;
-            color: #000;
-            padding: 5px;
-            border-radius: 5px;
-            display: none;
-            white-space: nowrap;
-            z-index: 10;
-        }
-        .total-info {
-            margin: 20px;
-        }
-        #progressBar {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 200px;
-            height: 30px;
-            background-color: #444;
-            border: 1px solid #fff;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-        #progress {
-            height: 100%;
-            background-color: #008000;
-            text-align: center;
-            color: white;
-            line-height: 30px;
-            width: 0; /* Inicialmente 0% */
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css"> <!-- Link para o arquivo CSS -->
 </head>
 <body>
     <h1>Controle de Depósitos</h1>
+    <div id="menu">
+        <button id="configButton">Configurações</button>
+        <button id="logoutButton" style="background-color: red;">Sair</button>
+    </div>
     <p id="daysSinceStart">0 dias desde o primeiro depósito</p>
 
     <div class="total-info">
         <p>Total Depositado: R$ <span id="totalDeposited">0.00</span></p>
         <p>Faltam para completar os depósitos: R$ <span id="amountRemaining">5050.00</span></p>
         <button id="resetButton">Reiniciar Depósitos</button>
-        <button id="logoutButton" style="background-color: red;">Sair</button>
     </div>
 
     <div id="depositContainer"></div>
@@ -75,9 +25,10 @@
         <div id="progress">0%</div>
     </div>
 
-    <audio id="depositSound" src="deposit-sound.mp3"></audio>
+    <audio id="depositSound" src="C:\Users\Emema\Desktop\Gerenciamento\deposit-sound.mp3"></audio>
 
     <script>
+        // Adicione seu código JavaScript aqui...
         const deposits = Array.from({ length: 100 }, (_, i) => i + 1);
         const totalAmount = 5050.00;
         const markedDeposits = new Map();
@@ -87,7 +38,7 @@
             const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
             savedDeposits.forEach(([deposit, date]) => markedDeposits.set(deposit, date));
             generateDeposits();
-            updateDaysSinceStart(); // Atualiza a contagem de dias após carregar os depósitos
+            updateDaysSinceStart();
             updateTotals();
         }
 
@@ -133,7 +84,7 @@
                         markedDeposits.set(deposit, currentDate);
                         saveLog();
                         generateDeposits();
-                        updateDaysSinceStart(); // Atualiza a contagem de dias após um novo depósito
+                        updateDaysSinceStart();
                     }
                     updateProgressBar();
                     playDepositSound();
@@ -153,7 +104,6 @@
             const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
 
             if (savedDeposits.length > 0) {
-                // Obtém a data do primeiro depósito
                 const firstDepositDate = new Date(Math.min(...savedDeposits.map(([_, date]) => new Date(date))));
                 const now = new Date();
                 const daysSinceStart = Math.floor((now - firstDepositDate) / (1000 * 60 * 60 * 24));
@@ -180,32 +130,35 @@
 
         function saveLog() {
             const currentUser = localStorage.getItem('currentUser');
-            localStorage.setItem(`markedDeposits_${currentUser}`, JSON.stringify(Array.from(markedDeposits.entries())));
+            localStorage.setItem(`markedDeposits_${currentUser}`, JSON.stringify([...markedDeposits]));
         }
 
         function playDepositSound() {
-            const depositSound = document.getElementById('depositSound');
-            depositSound.play();
+            const audio = document.getElementById('depositSound');
+            audio.play();
         }
 
+        window.onload = loadFromLocalStorage;
+
         document.getElementById('resetButton').onclick = () => {
-            const confirmation = confirm('Tem certeza de que deseja reiniciar os depósitos?');
+            const confirmation = confirm('Você tem certeza que deseja reiniciar?');
             if (confirmation) {
                 markedDeposits.clear();
-                saveLog();
+                const currentUser = localStorage.getItem('currentUser');
+                localStorage.removeItem(`markedDeposits_${currentUser}`);
                 generateDeposits();
-                updateDaysSinceStart(); // Atualiza a contagem de dias após reiniciar os depósitos
             }
         };
 
         document.getElementById('logoutButton').onclick = () => {
-            localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('currentUser');
-            window.location.href = 'index.html';
+            window.location.href = 'index.html'; // Redireciona para a página de login
         };
 
-        window.onload = loadFromLocalStorage;
+        document.getElementById('configButton').onclick = () => {
+            // Redireciona para a página de configurações (se houver)
+            alert('Funcionalidade de configurações não implementada.');
+        };
     </script>
-
 </body>
 </html>

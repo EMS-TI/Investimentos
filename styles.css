@@ -1,66 +1,89 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    font-family: 'Arial', sans-serif;
 }
 
-.login-container, .deposit-container {
+.login-container {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    padding: 30px;
     width: 300px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-top: 100px;
+    position: relative;
 }
 
-h2 {
+h1 {
     text-align: center;
+    margin-bottom: 20px;
+    color: #333;
 }
 
 .input-group {
-    margin-bottom: 15px;
-}
-
-.input-group label {
-    display: block;
-    margin-bottom: 5px;
+    position: relative;
+    margin-bottom: 20px;
 }
 
 .input-group input {
     width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
+    padding: 10px 0;
+    border: none;
+    border-bottom: 2px solid #ccc;
+    font-size: 18px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+    border-color: #007bff;
+}
+
+.input-group label {
+    position: absolute;
+    left: 0;
+    top: 10px;
+    font-size: 16px;
+    color: #aaa;
+    transition: 0.2s ease all;
+}
+
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label {
+    top: -10px;
+    left: 0;
+    font-size: 12px;
+    color: #007bff;
 }
 
 .toggle-password {
+    position: absolute;
+    right: 0;
+    top: 10px;
     cursor: pointer;
-    color: blue;
-    font-size: 0.9em;
-    margin-top: 5px;
-    display: block;
 }
 
-.remember-me {
-    display: flex;
-    align-items: center;
-}
-
-.error-message {
+#errorMessage {
     color: red;
-    margin-bottom: 10px;
+    margin-top: 10px;
     display: none;
 }
 
 button {
     width: 100%;
     padding: 10px;
-    background-color: #28a745;
+    background-color: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
 }
 
 button:hover {
-    background-color: #218838;
+    background-color: #0056b3;
 }

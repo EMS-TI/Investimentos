@@ -12,76 +12,13 @@
         <form method="POST" class="formLogin">
             <h1>Login</h1>
             <p>Digite os seus dados de acesso no campo abaixo.</p>
-            <label for="username">Usuário</label>
-            <input type="text" id="username" placeholder="Digite seu usuário" autofocus="true" required />
+            <label for="email">E-mail</label>
+            <input type="email" placeholder="Digite seu e-mail" id="email" required autofocus="true" />
             <label for="password">Senha</label>
-            <input type="password" id="password" placeholder="Digite sua senha" required />
-            <p><a href="/">Esqueci minha senha</a></p>
-            <input type="button" value="Acessar" class="btn" id="loginButton" />
-            <input type="button" value="Cadastrar" class="btn" id="registerButton" />
-            <input type="button" value="Excluir Usuário" class="btn" id="deleteButton" />
-            <p id="feedbackMessage" class="error-message"></p>
+            <input type="password" placeholder="Digite sua senha" id="password" required />
+            <a href="/">Esqueci minha senha</a>
+            <input type="submit" value="Acessar" class="btn" />
         </form>
     </div>
-
-    <script>
-        document.getElementById('loginButton').onclick = () => {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const storedPassword = localStorage.getItem(username);
-
-            const feedbackMessage = document.getElementById('feedbackMessage');
-
-            if (storedPassword === null) {
-                feedbackMessage.textContent = 'Usuário não existe.';
-                clearFields();
-            } else if (storedPassword !== password) {
-                feedbackMessage.textContent = 'Usuário ou senha incorretos.';
-                clearFields();
-            } else {
-                localStorage.setItem('isLoggedIn', true);
-                localStorage.setItem('currentUser', username);
-                window.location.href = 'depositos.html';
-            }
-        };
-
-        document.getElementById('registerButton').onclick = () => {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-
-            const feedbackMessage = document.getElementById('feedbackMessage');
-            const storedPassword = localStorage.getItem(username);
-
-            if (storedPassword) {
-                feedbackMessage.textContent = 'Usuário já existe.';
-            } else {
-                localStorage.setItem(username, password);
-                feedbackMessage.textContent = 'Usuário cadastrado com sucesso!';
-            }
-        };
-
-        document.getElementById('deleteButton').onclick = () => {
-            const username = document.getElementById('username').value;
-            const storedPassword = localStorage.getItem(username);
-            const feedbackMessage = document.getElementById('feedbackMessage');
-
-            if (storedPassword === null) {
-                feedbackMessage.textContent = 'Usuário não existe.';
-            } else {
-                const confirmDelete = confirm(`Você tem certeza que deseja excluir o usuário "${username}"?`);
-                if (confirmDelete) {
-                    localStorage.removeItem(username);
-                    localStorage.removeItem(`markedDeposits_${username}`);
-                    feedbackMessage.textContent = 'Usuário excluído com sucesso.';
-                    clearFields();
-                }
-            }
-        };
-
-        function clearFields() {
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-        }
-    </script>
 </body>
 </html>

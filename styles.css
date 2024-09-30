@@ -38,17 +38,18 @@ button {
     width: 100%;
     padding: 10px;
     margin-top: 10px;
-    background-color: #008cba;
-    border: none;
+    background-color: #008cba; /* Cor do botão */
+    border: 1px solid transparent; /* Borda padrão */
     border-radius: 5px;
     color: white;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, border-color 0.3s; /* Transições suaves */
 }
 
 button:hover {
-    background-color: #005f7f;
+    background-color: #005f7f; /* Cor do botão ao passar o mouse */
+    border-color: #fff; /* Cor da borda ao passar o mouse */
 }
 
 .error-message, .success-message {

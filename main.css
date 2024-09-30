@@ -5,6 +5,11 @@ body {
     margin: 0;
     padding: 0;
     color: #023047;
+    background-color: #480ca8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
 .page {
@@ -13,61 +18,62 @@ body {
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 100vh;
-    background-color: #480ca8; /* Cor de fundo igual ao tema da página de login */
+    background-color: #480ca8;
 }
 
-.formDepositos {
+.formLogin, .depositContainer {
     display: flex;
     flex-direction: column;
-    background-color: #fff; /* Cor de fundo da form de depósitos */
+    background-color: #fff;
     border-radius: 7px;
     padding: 40px;
     box-shadow: 10px 10px 40px rgba(0, 0, 0, 0.4);
     gap: 5px;
-    width: 90%; /* Largura da form */
-    max-width: 600px; /* Largura máxima */
 }
 
-.total-info {
+h1 {
+    padding: 0;
+    margin: 0;
+    font-weight: 500;
+    font-size: 2.3em;
+    color: #480ca8;
+}
+
+p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+input, .btn {
+    padding: 15px;
+    font-size: 14px;
+    border: 1px solid #ccc;
     margin-bottom: 20px;
+    margin-top: 5px;
+    border-radius: 4px;
+    transition: all linear 160ms;
+    outline: none;
 }
 
-.deposit-box {
-    display: inline-block;
-    margin: 10px;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    transition: background-color 0.2s;
+input:focus {
+    border: 1px solid #f72585;
 }
 
-.deposit-box:hover {
-    background-color: #f0f0f0;
+label {
+    font-size: 14px;
+    font-weight: 600;
 }
 
-.marked {
-    background-color: #008000; /* Verde para depósitos marcados */
+a {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 20px;
+    transition: all linear 160ms;
 }
 
-#progressBar {
-    margin-top: 20px;
-    width: 80%;
-    height: 30px;
-    background-color: #ccc;
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-#progress {
-    height: 100%;
-    background-color: #008000;
-    text-align: center;
-    color: white;
-    line-height: 30px;
-    width: 0; /* Inicialmente 0% */
+a:hover {
+    color: #f72585;
 }
 
 .btn {
@@ -75,15 +81,33 @@ body {
     color: #fff;
     font-size: 14px;
     font-weight: 600;
-    border: none !important;
-    transition: all linear 160ms;
+    border: none;
     cursor: pointer;
-    margin: 0 !important;
-    padding: 10px 20px;
-    border-radius: 4px;
 }
 
 .btn:hover {
     transform: scale(1.05);
     background-color: #ff0676;
+}
+
+.deposit-box {
+    background-color: #fff;
+    color: #023047;
+    border: 2px solid #f72585;
+    border-radius: 5px;
+    padding: 20px;
+    cursor: pointer;
+    margin: 10px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.deposit-box:hover {
+    transform: scale(1.05);
+    background-color: #ff0676;
+    color: white;
+}
+
+.marked {
+    background-color: #023047;
+    color: white;
 }

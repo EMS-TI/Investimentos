@@ -3,136 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Depósitos</title>
-    <link rel="stylesheet" href="main.css">
+    <title>Depósitos</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="page">
-        <form method="POST" class="formDepositos">
+        <div class="depositContainer">
             <h1>Controle de Depósitos</h1>
-            <p id="daysSinceStart">0 dias desde o primeiro depósito</p>
-
-            <div class="total-info">
-                <p>Total Depositado: R$ <span id="totalDeposited">0.00</span></p>
-                <p>Faltam para completar os depósitos: R$ <span id="amountRemaining">5050.00</span></p>
-                <button id="resetButton" class="btn">Reiniciar Depósitos</button>
-                <button id="logoutButton" class="btn" style="background-color: red;">Sair</button>
-            </div>
-
+            <p>Total depositado: R$ <span id="totalDeposited">0.00</span></p>
+            <p>Faltam para completar os depósitos: R$ <span id="amountRemaining">5050.00</span></p>
             <div id="depositContainer"></div>
-            <div id="progressBar">
-                <div id="progress">0%</div>
-            </div>
-
-            <audio id="depositSound" src="C:\Users\Emema\Desktop\Gerenciamento\deposit-sound.mp3"></audio>
-        </form>
+            <button id="resetButton" class="btn">Reiniciar Depósitos</button>
+            <button id="logoutButton" class="btn" style="background-color: red;">Sair</button>
+        </div>
     </div>
 
     <script>
-        const deposits = Array.from({ length: 100 }, (_, i) => i + 1);
-        const totalAmount = 5050.00;
-        const markedDeposits = new Map();
-
-        function loadFromLocalStorage() {
-            const currentUser = localStorage.getItem('currentUser');
-            const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
-            savedDeposits.forEach(([deposit, date]) => markedDeposits.set(deposit, date));
-            generateDeposits();
-            updateDaysSinceStart();
-            updateTotals();
-        }
-
-        function generateDeposits() {
-            const depositContainer = document.getElementById('depositContainer');
-            depositContainer.innerHTML = '';
-            deposits.forEach((deposit) => {
-                const box = document.createElement('div');
-                box.className = 'deposit-box';
-                box.textContent = deposit;
-
-                box.onclick = () => {
-                    if (markedDeposits.has(deposit)) {
-                        const confirmation = confirm('Você tem certeza de que deseja retirar este depósito?');
-                        if (confirmation) {
-                            markedDeposits.delete(deposit);
-                            saveLog();
-                            generateDeposits();
-                        }
-                    } else {
-                        const currentDate = new Date().toISOString();
-                        markedDeposits.set(deposit, currentDate);
-                        saveLog();
-                        generateDeposits();
-                        updateDaysSinceStart();
-                    }
-                    updateProgressBar();
-                    playDepositSound();
-                };
-
-                if (markedDeposits.has(deposit)) {
-                    box.classList.add('marked');
-                }
-                depositContainer.appendChild(box);
-            });
-            updateTotals();
-            updateProgressBar();
-        }
-
-        function updateDaysSinceStart() {
-            const currentUser = localStorage.getItem('currentUser');
-            const savedDeposits = JSON.parse(localStorage.getItem(`markedDeposits_${currentUser}`)) || [];
-            if (savedDeposits.length > 0) {
-                const firstDepositDate = new Date(Math.min(...savedDeposits.map(([_, date]) => new Date(date))));
-                const now = new Date();
-                const daysSinceStart = Math.floor((now - firstDepositDate) / (1000 * 60 * 60 * 24));
-                document.getElementById('daysSinceStart').textContent = `${daysSinceStart} dias desde o primeiro depósito`;
-            } else {
-                document.getElementById('daysSinceStart').textContent = `0 dias desde o início`;
-            }
-        }
-
-        function updateTotals() {
-            let totalDeposited = 0;
-            markedDeposits.forEach((_, key) => totalDeposited += key);
-            const amountRemaining = totalAmount - totalDeposited;
-
-            document.getElementById('totalDeposited').textContent = totalDeposited.toFixed(2);
-            document.getElementById('amountRemaining').textContent = amountRemaining.toFixed(2);
-        }
-
-        function updateProgressBar() {
-            const progress = (markedDeposits.size / deposits.length) * 100;
-            document.getElementById('progress').style.width = `${progress}%`;
-            document.getElementById('progress').textContent = `${progress.toFixed(2)}%`;
-        }
-
-        function saveLog() {
-            const currentUser = localStorage.getItem('currentUser');
-            localStorage.setItem(`markedDeposits_${currentUser}`, JSON.stringify(Array.from(markedDeposits.entries())));
-        }
-
-        function playDepositSound() {
-            const depositSound = document.getElementById('depositSound');
-            depositSound.play();
-        }
-
-        document.getElementById('resetButton').onclick = () => {
-            const confirmation = confirm('Tem certeza de que deseja reiniciar os depósitos?');
-            if (confirmation) {
-                markedDeposits.clear();
-                saveLog();
-                generateDeposits();
-                updateDaysSinceStart();
-            }
-        };
-
-        document.getElementById('logoutButton').onclick = () => {
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('currentUser');
-            window.location.href = 'index.html';
-        };
-
-        window.onload = loadFromLocalStorage;
+        // Lógica de depósito irá aqui
     </script>
 </body>
 </html>

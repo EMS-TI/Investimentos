@@ -2,46 +2,22 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="page">
         <form method="POST" class="formLogin">
             <h1>Login</h1>
-            <p>Digite seus dados de acesso no campo abaixo.</p>
-            <label for="username">Nome de Usuário</label>
-            <input type="text" placeholder="Digite seu nome de usuário" required autofocus="true" />
+            <p>Digite seus dados de acesso abaixo.</p>
+            <label for="username">Usuário</label>
+            <input type="text" id="username" placeholder="Digite seu usuário" required />
             <label for="password">Senha</label>
-            <input type="password" placeholder="Digite sua senha" required />
-            <a href="cadastro.html">Criar conta</a>
+            <input type="password" id="password" placeholder="Digite sua senha" required />
+            <a href="/">Esqueci minha senha</a>
             <input type="submit" value="Acessar" class="btn" />
         </form>
     </div>
-    
-    <script>
-        document.querySelector('.formLogin').onsubmit = function(event) {
-            event.preventDefault(); // Impede o envio do formulário
-
-            const username = document.querySelector('input[type="text"]').value;
-            const password = document.querySelector('input[type="password"]').value;
-
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-
-            // Verifica se o nome de usuário e a senha estão corretos
-            const user = users.find(user => user.username === username && user.password === password);
-
-            if (user) {
-                // Armazena o usuário atual no localStorage
-                localStorage.setItem('currentUser', username);
-                // Redireciona para a página de depósitos
-                window.location.href = 'depositos.html'; // Altere para o caminho correto da sua página de depósitos
-            } else {
-                alert('Nome de usuário ou senha incorretos.');
-            }
-        };
-    </script>
 </body>
 </html>

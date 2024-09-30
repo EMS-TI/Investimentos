@@ -2,19 +2,26 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="main.css">
 </head>
 <body>
-    <div class="login-container">
-        <h1>Login</h1>
-        <p id="feedbackMessage" class="error-message"></p>
-        <input type="text" id="username" placeholder="Usuário" required>
-        <input type="password" id="password" placeholder="Senha" required>
-        <button id="loginButton">Entrar</button>
-        <button id="registerButton">Cadastrar</button>
-        <button id="deleteButton">Excluir Usuário</button>
+    <div class="page">
+        <form method="POST" class="formLogin">
+            <h1>Login</h1>
+            <p>Digite os seus dados de acesso no campo abaixo.</p>
+            <label for="username">Usuário</label>
+            <input type="text" id="username" placeholder="Digite seu usuário" autofocus="true" required />
+            <label for="password">Senha</label>
+            <input type="password" id="password" placeholder="Digite sua senha" required />
+            <p><a href="/">Esqueci minha senha</a></p>
+            <input type="button" value="Acessar" class="btn" id="loginButton" />
+            <input type="button" value="Cadastrar" class="btn" id="registerButton" />
+            <input type="button" value="Excluir Usuário" class="btn" id="deleteButton" />
+            <p id="feedbackMessage" class="error-message"></p>
+        </form>
     </div>
 
     <script>
@@ -22,6 +29,7 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const storedPassword = localStorage.getItem(username);
+
             const feedbackMessage = document.getElementById('feedbackMessage');
 
             if (storedPassword === null) {
@@ -40,6 +48,7 @@
         document.getElementById('registerButton').onclick = () => {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+
             const feedbackMessage = document.getElementById('feedbackMessage');
             const storedPassword = localStorage.getItem(username);
 
@@ -62,9 +71,9 @@
                 const confirmDelete = confirm(`Você tem certeza que deseja excluir o usuário "${username}"?`);
                 if (confirmDelete) {
                     localStorage.removeItem(username);
-                    localStorage.removeItem(`markedDeposits_${username}`); // Remove depósitos do usuário
+                    localStorage.removeItem(`markedDeposits_${username}`);
                     feedbackMessage.textContent = 'Usuário excluído com sucesso.';
-                    clearFields(); // Limpa os campos após a exclusão
+                    clearFields();
                 }
             }
         };

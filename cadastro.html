@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <div class="page">
+        <form method="POST" class="formCadastro">
+            <h1>Cadastro</h1>
+            <p>Preencha os dados abaixo para se cadastrar.</p>
+            <label for="username">Nome de Usuário</label>
+            <input type="text" placeholder="Digite seu nome de usuário" required autofocus="true" />
+            <label for="password">Senha</label>
+            <input type="password" placeholder="Digite sua senha" required />
+            <input type="submit" value="Cadastrar" class="btn" />
+        </form>
+    </div>
+
+    <script>
+        document.querySelector('.formCadastro').onsubmit = function(event) {
+            event.preventDefault(); // Impede o envio do formulário
+
+            const username = document.querySelector('input[type="text"]').value;
+            const password = document.querySelector('input[type="password"]').value;
+
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+
+            // Verifica se o nome de usuário já existe
+            const existingUser = users.find(user => user.username === username);
+
+            if (existingUser) {
+                alert('Nome de usuário já existe. Escolha outro.');
+            } else {
+                // Adiciona o novo usuário
+                users.push({ username, password });
+                localStorage.setItem('users', JSON.stringify(users));
+                alert('Cadastro realizado com sucesso! Você pode fazer login agora.');
+                window.location.href = 'index.html'; // Redireciona para a página de login
+            }
+        };
+    </script>
+</body>
+</html>

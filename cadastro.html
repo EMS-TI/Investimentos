@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Cadastro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .register-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        .register-container h1 {
+            margin-bottom: 30px;
+            font-size: 26px;
+            text-align: center;
+        }
+        .register-container input, .register-container button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .register-container button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .register-container button:hover {
+            background-color: #0056b3;
+        }
+        .show-password {
+            cursor: pointer;
+            font-size: 14px;
+            color: #007bff;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-container">
+        <h1>Cadastrar Usuário</h1>
+        <input type="text" id="newUsername" placeholder="Usuário">
+        <input type="password" id="newPassword" placeholder="Senha">
+        <span class="show-password" id="showPassword">Mostrar Senha</span>
+        <button id="registerButton">Cadastrar</button>
+        <a href="index.html" style="text-align: center; display: block; margin-top: 15px;">Voltar para Login</a>
+    </div>
+
+    <script>
+        const showFeedback = (message) => {
+            alert(message);
+        };
+
+        document.getElementById('registerButton').onclick = () => {
+            const username = document.getElementById('newUsername').value;
+            const password = document.getElementById('newPassword').value;
+
+            if (!username || !password) {
+                showFeedback("Preencha todos os campos para cadastrar!");
+                return;
+            }
+
+            if (localStorage.getItem(username)) {
+                showFeedback("Usuário já existe. Tente um nome diferente.");
+            } else {
+                localStorage.setItem(username, password);
+                showFeedback("Usuário cadastrado com sucesso!");
+                window.location.href = "index.html"; // Redireciona para a página de login
+            }
+        };
+
+        document.getElementById('showPassword').onclick = () => {
+            const passwordField = document.getElementById('newPassword');
+            const type = passwordField.type === "password" ? "text" : "password";
+            passwordField.type = type;
+            document.getElementById('showPassword').textContent = type === "password" ? "Mostrar Senha" : "Ocultar Senha";
+        };
+    </script>
+
+</body>
+</html>

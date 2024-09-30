@@ -20,5 +20,28 @@
             <input type="submit" value="Acessar" class="btn" />
         </form>
     </div>
+    
+    <script>
+        document.querySelector('.formLogin').onsubmit = function(event) {
+            event.preventDefault(); // Impede o envio do formulário
+
+            const username = document.querySelector('input[type="text"]').value;
+            const password = document.querySelector('input[type="password"]').value;
+
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+
+            // Verifica se o nome de usuário e a senha estão corretos
+            const user = users.find(user => user.username === username && user.password === password);
+
+            if (user) {
+                // Armazena o usuário atual no localStorage
+                localStorage.setItem('currentUser', username);
+                // Redireciona para a página de depósitos
+                window.location.href = 'depositos.html'; // Altere para o caminho correto da sua página de depósitos
+            } else {
+                alert('Nome de usuário ou senha incorretos.');
+            }
+        };
+    </script>
 </body>
 </html>

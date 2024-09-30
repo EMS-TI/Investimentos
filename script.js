@@ -41,6 +41,9 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
     if (localStorage.getItem(newUsername)) {
         registerErrorMessage.style.display = 'block';
         registerErrorMessage.innerText = 'Nome de usuário já existe.';
+    } else if (newPassword.length < 6) {
+        registerErrorMessage.style.display = 'block';
+        registerErrorMessage.innerText = 'A senha deve ter pelo menos 6 caracteres.';
     } else {
         localStorage.setItem(newUsername, newPassword);
         alert('Cadastro bem-sucedido! Agora você pode fazer login.');

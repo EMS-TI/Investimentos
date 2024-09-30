@@ -4,20 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle de Depósitos</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Link para o arquivo CSS -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <h1>Controle de Depósitos</h1>
-    <div id="menu">
-        <button id="configButton">Configurações</button>
-        <button id="logoutButton" style="background-color: red;">Sair</button>
-    </div>
     <p id="daysSinceStart">0 dias desde o primeiro depósito</p>
 
     <div class="total-info">
         <p>Total Depositado: R$ <span id="totalDeposited">0.00</span></p>
-        <p>Faltam para completar os depósitos: R$ <span id="amountRemaining">5050.00</span></p>
+        <p>Faltam para completar os depósitos: R$ <span id="amountRemaining">0.00</span></p>
         <button id="resetButton">Reiniciar Depósitos</button>
+        <button id="logoutButton" style="background-color: red;">Sair</button>
     </div>
 
     <div id="depositContainer"></div>
@@ -28,7 +25,6 @@
     <audio id="depositSound" src="C:\Users\Emema\Desktop\Gerenciamento\deposit-sound.mp3"></audio>
 
     <script>
-        // Adicione seu código JavaScript aqui...
         const deposits = Array.from({ length: 100 }, (_, i) => i + 1);
         const totalAmount = 5050.00;
         const markedDeposits = new Map();
@@ -130,35 +126,31 @@
 
         function saveLog() {
             const currentUser = localStorage.getItem('currentUser');
-            localStorage.setItem(`markedDeposits_${currentUser}`, JSON.stringify([...markedDeposits]));
+            localStorage.setItem(`markedDeposits_${currentUser}`, JSON.stringify(Array.from(markedDeposits.entries())));
         }
 
         function playDepositSound() {
-            const audio = document.getElementById('depositSound');
-            audio.play();
+            const depositSound = document.getElementById('depositSound');
+            depositSound.play();
         }
 
-        window.onload = loadFromLocalStorage;
-
         document.getElementById('resetButton').onclick = () => {
-            const confirmation = confirm('Você tem certeza que deseja reiniciar?');
+            const confirmation = confirm('Tem certeza de que deseja reiniciar os depósitos?');
             if (confirmation) {
                 markedDeposits.clear();
-                const currentUser = localStorage.getItem('currentUser');
-                localStorage.removeItem(`markedDeposits_${currentUser}`);
+                saveLog();
                 generateDeposits();
+                updateDaysSinceStart();
             }
         };
 
         document.getElementById('logoutButton').onclick = () => {
+            localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('currentUser');
-            window.location.href = 'index.html'; // Redireciona para a página de login
+            window.location.href = 'index.html';
         };
 
-        document.getElementById('configButton').onclick = () => {
-            // Redireciona para a página de configurações (se houver)
-            alert('Funcionalidade de configurações não implementada.');
-        };
+        window.onload = loadFromLocalStorage;
     </script>
 </body>
 </html>

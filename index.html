@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Link para o arquivo CSS -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="login-container">
@@ -18,18 +18,61 @@
     </div>
 
     <script>
-        // Adicione seu código JavaScript aqui...
-        document.getElementById('loginButton').onclick = function() {
-            // Lógica para login
+        document.getElementById('loginButton').onclick = () => {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const storedPassword = localStorage.getItem(username);
+            const feedbackMessage = document.getElementById('feedbackMessage');
+
+            if (storedPassword === null) {
+                feedbackMessage.textContent = 'Usuário não existe.';
+                clearFields();
+            } else if (storedPassword !== password) {
+                feedbackMessage.textContent = 'Usuário ou senha incorretos.';
+                clearFields();
+            } else {
+                localStorage.setItem('isLoggedIn', true);
+                localStorage.setItem('currentUser', username);
+                window.location.href = 'depositos.html';
+            }
         };
 
-        document.getElementById('registerButton').onclick = function() {
-            // Lógica para cadastro
+        document.getElementById('registerButton').onclick = () => {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const feedbackMessage = document.getElementById('feedbackMessage');
+            const storedPassword = localStorage.getItem(username);
+
+            if (storedPassword) {
+                feedbackMessage.textContent = 'Usuário já existe.';
+            } else {
+                localStorage.setItem(username, password);
+                feedbackMessage.textContent = 'Usuário cadastrado com sucesso!';
+            }
         };
 
-        document.getElementById('deleteButton').onclick = function() {
-            // Lógica para excluir usuário
+        document.getElementById('deleteButton').onclick = () => {
+            const username = document.getElementById('username').value;
+            const storedPassword = localStorage.getItem(username);
+            const feedbackMessage = document.getElementById('feedbackMessage');
+
+            if (storedPassword === null) {
+                feedbackMessage.textContent = 'Usuário não existe.';
+            } else {
+                const confirmDelete = confirm(`Você tem certeza que deseja excluir o usuário "${username}"?`);
+                if (confirmDelete) {
+                    localStorage.removeItem(username);
+                    localStorage.removeItem(`markedDeposits_${username}`); // Remove depósitos do usuário
+                    feedbackMessage.textContent = 'Usuário excluído com sucesso.';
+                    clearFields(); // Limpa os campos após a exclusão
+                }
+            }
         };
+
+        function clearFields() {
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
     </script>
 </body>
 </html>

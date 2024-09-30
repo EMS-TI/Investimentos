@@ -4,25 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle de Depósitos</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="main.css">
 </head>
 <body>
-    <h1>Controle de Depósitos</h1>
-    <p id="daysSinceStart">0 dias desde o primeiro depósito</p>
+    <div class="page">
+        <h1>Controle de Depósitos</h1>
+        <p id="daysSinceStart">0 dias desde o primeiro depósito</p>
 
-    <div class="total-info">
-        <p>Total Depositado: R$ <span id="totalDeposited">0.00</span></p>
-        <p>Faltam para completar os depósitos: R$ <span id="amountRemaining">0.00</span></p>
-        <button id="resetButton">Reiniciar Depósitos</button>
-        <button id="logoutButton" style="background-color: red;">Sair</button>
+        <div class="total-info">
+            <p>Total Depositado: R$ <span id="totalDeposited">0.00</span></p>
+            <p>Faltam para completar os depósitos: R$ <span id="amountRemaining">5050.00</span></p>
+            <button id="resetButton" class="btn">Reiniciar Depósitos</button>
+            <button id="logoutButton" class="btn" style="background-color: red;">Sair</button>
+        </div>
+
+        <div id="depositContainer"></div>
+        <div id="progressBar">
+            <div id="progress">0%</div>
+        </div>
+
+        <audio id="depositSound" src="C:\Users\Emema\Desktop\Gerenciamento\deposit-sound.mp3"></audio>
     </div>
-
-    <div id="depositContainer"></div>
-    <div id="progressBar">
-        <div id="progress">0%</div>
-    </div>
-
-    <audio id="depositSound" src="C:\Users\Emema\Desktop\Gerenciamento\deposit-sound.mp3"></audio>
 
     <script>
         const deposits = Array.from({ length: 100 }, (_, i) => i + 1);
@@ -46,27 +48,6 @@
                 box.className = 'deposit-box';
                 box.textContent = deposit;
 
-                const tooltip = document.createElement('div');
-                tooltip.className = 'tooltip';
-                box.appendChild(tooltip);
-
-                box.onmouseenter = () => {
-                    if (markedDeposits.has(deposit)) {
-                        const depositDate = new Date(markedDeposits.get(deposit));
-                        const formattedDate = depositDate.toLocaleDateString('pt-BR', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric'
-                        });
-                        tooltip.textContent = `Data do depósito: ${formattedDate}`;
-                        tooltip.style.display = 'block';
-                    }
-                };
-
-                box.onmouseleave = () => {
-                    tooltip.style.display = 'none';
-                };
-
                 box.onclick = () => {
                     if (markedDeposits.has(deposit)) {
                         const confirmation = confirm('Você tem certeza de que deseja retirar este depósito?');
@@ -82,8 +63,7 @@
                         generateDeposits();
                         updateDaysSinceStart();
                     }
-                    updateProgressBar();
-                    playDepositSound();
+                    updateTotals();
                 };
 
                 if (markedDeposits.has(deposit)) {
@@ -92,7 +72,6 @@
                 depositContainer.appendChild(box);
             });
             updateTotals();
-            updateProgressBar();
         }
 
         function updateDaysSinceStart() {
@@ -118,20 +97,9 @@
             document.getElementById('amountRemaining').textContent = amountRemaining.toFixed(2);
         }
 
-        function updateProgressBar() {
-            const progress = (markedDeposits.size / deposits.length) * 100;
-            document.getElementById('progress').style.width = `${progress}%`;
-            document.getElementById('progress').textContent = `${progress.toFixed(2)}%`;
-        }
-
         function saveLog() {
             const currentUser = localStorage.getItem('currentUser');
             localStorage.setItem(`markedDeposits_${currentUser}`, JSON.stringify(Array.from(markedDeposits.entries())));
-        }
-
-        function playDepositSound() {
-            const depositSound = document.getElementById('depositSound');
-            depositSound.play();
         }
 
         document.getElementById('resetButton').onclick = () => {

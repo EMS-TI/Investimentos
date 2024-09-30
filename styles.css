@@ -8,7 +8,7 @@ body {
     font-family: 'Arial', sans-serif;
 }
 
-.login-container {
+.login-container, .register-container, .deposit-container {
     background: rgba(255, 255, 255, 0.9);
     border-radius: 10px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
@@ -17,7 +17,7 @@ body {
     position: relative;
 }
 
-h1 {
+h1, h2 {
     text-align: center;
     margin-bottom: 20px;
     color: #333;
@@ -66,7 +66,7 @@ h1 {
     cursor: pointer;
 }
 
-#errorMessage {
+#errorMessage, #registerErrorMessage {
     color: red;
     margin-top: 10px;
     display: none;

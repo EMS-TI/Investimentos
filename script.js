@@ -1,3 +1,4 @@
+// Função de login
 document.getElementById('loginForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -6,7 +7,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     const errorMessage = document.getElementById('errorMessage');
 
     // Simulação de login
-    if (username === 'admin' && password === '1234') {
+    if (localStorage.getItem(username) && localStorage.getItem(username) === password) {
         alert('Login bem-sucedido!');
         // Redirecionar para a próxima página (ex: depositos.html)
         // window.location.href = 'depositos.html';
@@ -25,5 +26,24 @@ document.getElementById('togglePassword').addEventListener('click', function() {
     } else {
         passwordField.type = 'password';
         this.innerText = '👁️';
+    }
+});
+
+// Função de cadastro
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const newUsername = document.getElementById('newUsername').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const registerErrorMessage = document.getElementById('registerErrorMessage');
+
+    // Verificação de cadastro
+    if (localStorage.getItem(newUsername)) {
+        registerErrorMessage.style.display = 'block';
+        registerErrorMessage.innerText = 'Nome de usuário já existe.';
+    } else {
+        localStorage.setItem(newUsername, newPassword);
+        alert('Cadastro bem-sucedido! Agora você pode fazer login.');
+        window.location.href = 'login.html'; // Redirecionar para a página de login
     }
 });

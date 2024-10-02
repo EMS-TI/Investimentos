@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página de Login</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script> <!-- Importando Supabase -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,23 +15,19 @@
             height: 100vh;
             margin: 0;
         }
-
         .login-container {
             background-color: #fff;
             padding: 40px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 300px;
-            position: relative;
         }
-
         .login-container h1 {
             margin-bottom: 30px;
             font-size: 26px;
             text-align: center;
         }
-
-        .login-container input {
+        .login-container input, .login-container button {
             display: block;
             width: 100%;
             padding: 10px;
@@ -40,141 +36,107 @@
             border-radius: 5px;
             font-size: 16px;
         }
-
-        .password-container {
-            position: relative;
-            width: 100%;
-        }
-
-        .password-container input {
-            width: 100%;
-            padding-right: 40px; /* Espaço para o ícone */
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            font-size: 18px;
-            color: #aaa;
-        }
-
         .login-container button {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
             background-color: #007bff;
             color: #fff;
-            font-size: 16px;
+            border: none;
             cursor: pointer;
         }
-
         .login-container button:hover {
             background-color: #0056b3;
         }
-
         .message {
             text-align: center;
             font-size: 14px;
             color: #555;
             margin-bottom: 20px;
         }
-
+        .show-password {
+            cursor: pointer;
+            font-size: 14px;
+            color: #007bff;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
 
-<div class="login-container">
-    <div class="message">Cadastre-se para iniciar seus depósitos</div>
-    <h1>Login</h1>
-    <input type="text" id="username" placeholder="Usuário">
-
-    <!-- Container do campo de senha e ícone -->
-    <div class="password-container">
+    <div class="login-container">
+        <div class="message">Cadastre-se para iniciar seus depósitos</div>
+        <h1>Login</h1>
+        <input type="text" id="username" placeholder="Usuário">
         <input type="password" id="password" placeholder="Senha">
-        <i class="fas fa-eye-slash toggle-password" id="togglePassword"></i> <!-- Começa com o ícone 'eye-slash' -->
+        <span class="show-password" id="showPassword">Mostrar Senha</span>
+        <button id="loginButton">Entrar</button>
+        <button id="deleteButton">Excluir Usuário</button>
+        <a href="cadastro.html" style="display: block; text-align: center; margin-top: 15px;">Cadastrar</a>
     </div>
 
-    <button id="loginButton">Entrar</button>
-    <button id="deleteButton">Excluir Usuário</button>
-    <a href="cadastro.html" style="display: block; text-align: center; margin-top: 15px;">Cadastrar</a>
-</div>
+    <script>
+        const supabaseUrl = 'https://YOUR_SUPABASE_URL'; // Substitua pela sua URL do Supabase
+        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY'; // Substitua pela sua chave anon do Supabase
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-<script>
-    // Função para alternar exibição da senha
-    const togglePassword = document.querySelector('#togglePassword');
-    const password = document.querySelector('#password');
+        const clearFields = () => {
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        };
 
-    togglePassword.addEventListener('click', function () {
-        // Alterna o tipo de input entre 'password' e 'text'
-        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-        password.setAttribute('type', type);
+        const showFeedback = (message) => {
+            alert(message);
+        };
 
-        // Alterna o ícone entre olho e olho cortado
-        this.classList.toggle('fa-eye-slash');  // Começa como 'fa-eye-slash'
-        this.classList.toggle('fa-eye');        // Mostra o 'fa-eye' ao clicar
-    });
+        async function loginUser(username, password) {
+            const { data: user, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('username', username)
+                .eq('password', password) // Verifique se a senha está correta
+                .single();
 
-    // Funções existentes
-    const clearFields = () => {
-        document.getElementById('username').value = '';
-        document.getElementById('password').value = '';
-    };
-
-    const showFeedback = (message) => {
-        alert(message);
-    };
-
-    document.getElementById('loginButton').onclick = () => {
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-
-        if (localStorage.getItem(username) === password) {
-            localStorage.setItem('currentUser', username);
-            localStorage.setItem('isLoggedIn', true);
-            window.location.href = "depositos.html"; // Redireciona para a página de depósitos
-        } else {
-            showFeedback("Usuário ou senha incorretos!");
-        }
-    };
-
-    document.getElementById('deleteButton').onclick = () => {
-        const username = document.getElementById('username').value.trim();
-        if (!username) {
-            showFeedback('Insira o nome de usuário para excluir.');
-            return;
+            if (error || !user) {
+                alert('Usuário ou senha incorretos!');
+            } else {
+                localStorage.setItem('currentUser', user.id);
+                localStorage.setItem('isLoggedIn', true);
+                window.location.href = "depositos.html"; // Redirecionar para a página de depósitos
+            }
         }
 
-        if (localStorage.getItem(username)) {
-            localStorage.removeItem(username); // Remove o usuário
-            localStorage.removeItem(`${username}_markedDeposits`); // Remove depósitos
-            showFeedback('Usuário excluído com sucesso.');
-            clearFields(); // Limpa os campos após a exclusão
-        } else {
-            showFeedback('Usuário não encontrado.');
-        }
-    };
+        document.getElementById('loginButton').onclick = () => {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            loginUser(username, password);
+        };
 
-    document.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            document.getElementById('loginButton').click();
-        }
-    });
+        document.getElementById('deleteButton').onclick = async () => {
+            const username = document.getElementById('username').value.trim();
+            if (!username) {
+                showFeedback('Insira o nome de usuário para excluir.');
+                return;
+            }
 
-    window.onload = () => {
-        const isLoggedIn = localStorage.getItem('isLoggedIn');
-        const currentPage = window.location.pathname.split("/").pop();
+            const { data, error } = await supabase
+                .from('users')
+                .delete()
+                .eq('username', username);
 
-        if (currentPage === 'depositos.html' && !isLoggedIn) {
-            window.location.href = "index.html"; // Redireciona se não estiver logado
-        }
-    };
-</script>
+            if (error) {
+                showFeedback('Erro ao excluir usuário.');
+            } else {
+                showFeedback('Usuário excluído com sucesso.');
+                clearFields();
+            }
+        };
+
+        document.getElementById('showPassword').onclick = () => {
+            const passwordField = document.getElementById('password');
+            const type = passwordField.type === "password" ? "text" : "password";
+            passwordField.type = type;
+            document.getElementById('showPassword').textContent = type === "password" ? "Mostrar Senha" : "Ocultar Senha";
+        };
+    </script>
 
 </body>
 </html>

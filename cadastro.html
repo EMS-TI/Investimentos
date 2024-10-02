@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página de Cadastro</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script> <!-- Importando Supabase -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -65,13 +66,27 @@
     </div>
 
     <script>
-        const supabaseUrl = 'https://onyaundlkuylwuyvhlny.supabase.co'; // Substitua pela sua URL
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ueWF1bmRsa3V5bHd1eXZobG55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjc4MjkwOTcsImV4cCI6MjA0MzQwNTA5N30.e-Ov35V20ztxblG3XMQhIuKmfuolbT1UZy7iaBPVDj0'; // Substitua pela sua chave pública
+        const supabaseUrl = 'https://onyaundlkuylwuyvhlny.supabase.co'; // Substitua pela sua URL do Supabase
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ueWF1bmRsa3V5bHd1eXZobG55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjc4MjkwOTcsImV4cCI6MjA0MzQwNTA5N30.e-Ov35V20ztxblG3XMQhIuKmfuolbT1UZy7iaBPVDj0'; // Substitua pela sua chave anon do Supabase
         const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
         const showFeedback = (message) => {
             alert(message);
         };
+
+        async function registerUser(username, password) {
+            const { data, error } = await supabase
+                .from('users')
+                .insert([{ username: username, password: password }]);
+
+            if (error) {
+                console.error('Erro ao cadastrar usuário:', error);
+                alert('Erro ao cadastrar usuário.');
+            } else {
+                alert('Usuário cadastrado com sucesso!');
+                window.location.href = 'index.html'; // Redirecionar para a página de login
+            }
+        }
 
         document.getElementById('registerButton').onclick = () => {
             const username = document.getElementById('newUsername').value;
@@ -79,15 +94,8 @@
 
             if (!username || !password) {
                 showFeedback("Preencha todos os campos para cadastrar!");
-                return;
-            }
-
-            if (localStorage.getItem(username)) {
-                showFeedback("Usuário já existe. Tente um nome diferente.");
             } else {
-                localStorage.setItem(username, password);
-                showFeedback("Usuário cadastrado com sucesso!");
-                window.location.href = "index.html"; // Redireciona para a página de login
+                registerUser(username, password);
             }
         };
 

@@ -58,11 +58,12 @@
     </div>
 
     <script>
-        const supabaseUrl = 'https://onyaundlkuylwuyvhlny.supabase.co'; // Substitua pela sua URL do Supabase
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ueWF1bmRsa3V5bHd1eXZobG55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjc4MjkwOTcsImV4cCI6MjA0MzQwNTA5N30.e-Ov35V20ztxblG3XMQhIuKmfuolbT1UZy7iaBPVDj0'; // Substitua pela sua chave anon do Supabase
+        const supabaseUrl = 'https://YOUR_SUPABASE_URL'; // Substitua pela sua URL do Supabase
+        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY'; // Substitua pela sua chave anon do Supabase
         const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
         async function loginUser() {
+            console.log("Tentando fazer login..."); // Adicionado para depuração
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
@@ -77,6 +78,7 @@
                 return;
             }
 
+            console.log("Login bem-sucedido:", user); // Adicionado para depuração
             localStorage.setItem('currentUser', user.id);
             localStorage.setItem('isLoggedIn', true);
             window.location.href = 'depositos.html'; // Redireciona para a página de depósitos

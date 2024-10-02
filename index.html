@@ -97,7 +97,7 @@
     <!-- Container do campo de senha e ícone -->
     <div class="password-container">
         <input type="password" id="password" placeholder="Senha">
-        <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+        <i class="fas fa-eye-slash toggle-password" id="togglePassword"></i> <!-- Começa com o ícone 'eye-slash' -->
     </div>
 
     <button id="loginButton">Entrar</button>
@@ -116,8 +116,8 @@
         password.setAttribute('type', type);
 
         // Alterna o ícone entre olho e olho cortado
-        this.classList.toggle('fa-eye');
-        this.classList.toggle('fa-eye-slash');
+        this.classList.toggle('fa-eye-slash');  // Começa como 'fa-eye-slash'
+        this.classList.toggle('fa-eye');        // Mostra o 'fa-eye' ao clicar
     });
 
     // Funções existentes

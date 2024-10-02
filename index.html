@@ -4,25 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página de Login</title>
-    <style>
-        /* CSS mantido do código anterior */
-    </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <style>
+        /* Seu CSS aqui */
+    </style>
 </head>
 <body>
 
     <div class="login-container">
-        <div class="message">Cadastre-se para iniciar seus depósitos</div>
         <h1>Login</h1>
-        <input type="text" id="username" placeholder="Usuário">
-        <input type="password" id="password" placeholder="Senha">
+        <input type="text" id="username" placeholder="Usuário" required>
+        <input type="password" id="password" placeholder="Senha" required>
         <button id="loginButton">Entrar</button>
-        <button id="deleteButton">Excluir Usuário</button>
-        <a href="cadastro.html" style="display: block; text-align: center; margin-top: 15px;">Cadastrar</a>
+        <a href="cadastro.html">Cadastrar</a>
     </div>
 
     <script>
-        // Substitua estas constantes pelas suas credenciais do Supabase
         const supabaseUrl = 'https://onyaundlkuylwuyvhlny.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ueWF1bmRsa3V5bHd1eXZobG55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjc4MjkwOTcsImV4cCI6MjA0MzQwNTA5N30.e-Ov35V20ztxblG3XMQhIuKmfuolbT1UZy7iaBPVDj0';
         const supabase = supabase.createClient(supabaseUrl, supabaseKey);
@@ -32,38 +29,14 @@
             const password = document.getElementById('password').value;
 
             // Login com Supabase
-            const { user, error } = await supabase.auth.signIn({ email: username, password });
+            const { error } = await supabase.auth.signIn({ email: username, password });
 
             if (error) {
+                console.error('Erro no login:', error);
                 alert("Usuário ou senha incorretos!");
             } else {
-                localStorage.setItem('currentUser', user.email);
-                localStorage.setItem('isLoggedIn', true);
                 window.location.href = "depositos.html"; // Redireciona para a página de depósitos
             }
-        };
-
-        document.getElementById('deleteButton').onclick = async () => {
-            const username = document.getElementById('username').value.trim();
-            if (!username) {
-                alert('Insira o nome de usuário para excluir.');
-                return;
-            }
-
-            // Para deletar o usuário
-            const { error } = await supabase.auth.api.deleteUser(username);
-            if (error) {
-                alert('Erro ao excluir usuário: ' + error.message);
-            } else {
-                alert('Usuário excluído com sucesso.');
-                localStorage.removeItem(username);
-                clearFields();
-            }
-        };
-
-        const clearFields = () => {
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
         };
     </script>
 

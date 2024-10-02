@@ -4,20 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página de Cadastro</title>
-    <style>
-        /* CSS mantido do código anterior */
-    </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <style>
+        /* Seu CSS aqui */
+    </style>
 </head>
 <body>
 
     <div class="register-container">
         <h1>Cadastrar Usuário</h1>
-        <input type="text" id="newUsername" placeholder="Usuário">
-        <input type="password" id="newPassword" placeholder="Senha">
-        <span class="show-password" id="showPassword">Mostrar Senha</span>
+        <input type="text" id="newUsername" placeholder="Usuário" required>
+        <input type="password" id="newPassword" placeholder="Senha" required>
         <button id="registerButton">Cadastrar</button>
-        <a href="index.html" style="text-align: center; display: block; margin-top: 15px;">Voltar para Login</a>
+        <a href="index.html">Voltar para Login</a>
     </div>
 
     <script>
@@ -29,27 +28,16 @@
             const username = document.getElementById('newUsername').value;
             const password = document.getElementById('newPassword').value;
 
-            if (!username || !password) {
-                alert("Preencha todos os campos para cadastrar!");
-                return;
-            }
-
             // Cadastro com Supabase
             const { user, error } = await supabase.auth.signUp({ email: username, password });
 
             if (error) {
+                console.error('Erro no cadastro:', error);
                 alert("Erro ao cadastrar: " + error.message);
             } else {
                 alert("Usuário cadastrado com sucesso!");
                 window.location.href = "index.html"; // Redireciona para a página de login
             }
-        };
-
-        document.getElementById('showPassword').onclick = () => {
-            const passwordField = document.getElementById('newPassword');
-            const type = passwordField.type === "password" ? "text" : "password";
-            passwordField.type = type;
-            document.getElementById('showPassword').textContent = type === "password" ? "Mostrar Senha" : "Ocultar Senha";
         };
     </script>
 

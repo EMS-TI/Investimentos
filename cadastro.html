@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página de Cadastro</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script> <!-- Importando Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,19 +15,19 @@
             height: 100vh;
             margin: 0;
         }
-        .register-container {
+        .cadastro-container {
             background-color: #fff;
             padding: 40px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 300px;
         }
-        .register-container h1 {
+        .cadastro-container h1 {
             margin-bottom: 30px;
             font-size: 26px;
             text-align: center;
         }
-        .register-container input, .register-container button {
+        .cadastro-container input, .cadastro-container button {
             display: block;
             width: 100%;
             padding: 10px;
@@ -36,75 +36,52 @@
             border-radius: 5px;
             font-size: 16px;
         }
-        .register-container button {
+        .cadastro-container button {
             background-color: #007bff;
             color: #fff;
             border: none;
             cursor: pointer;
         }
-        .register-container button:hover {
+        .cadastro-container button:hover {
             background-color: #0056b3;
-        }
-        .show-password {
-            cursor: pointer;
-            font-size: 14px;
-            color: #007bff;
-            margin-top: -10px;
-            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
-    <div class="register-container">
-        <h1>Cadastrar Usuário</h1>
-        <input type="text" id="newUsername" placeholder="Usuário">
-        <input type="password" id="newPassword" placeholder="Senha">
-        <span class="show-password" id="showPassword">Mostrar Senha</span>
+    <div class="cadastro-container">
+        <h1>Cadastrar</h1>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Senha" required>
         <button id="registerButton">Cadastrar</button>
         <a href="index.html" style="text-align: center; display: block; margin-top: 15px;">Voltar para Login</a>
     </div>
 
     <script>
-        const supabaseUrl = 'https://onyaundlkuylwuyvhlny.supabase.co'; // Substitua pela sua URL do Supabase
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ueWF1bmRsa3V5bHd1eXZobG55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjc4MjkwOTcsImV4cCI6MjA0MzQwNTA5N30.e-Ov35V20ztxblG3XMQhIuKmfuolbT1UZy7iaBPVDj0'; // Substitua pela sua chave anon do Supabase
+        const supabaseUrl = 'https://YOUR_SUPABASE_URL'; // Substitua pela sua URL do Supabase
+        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY'; // Substitua pela sua chave anon do Supabase
         const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        const showFeedback = (message) => {
-            alert(message);
-        };
+        async function registerUser() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
-        async function registerUser(username, password) {
-            const { data, error } = await supabase
-                .from('users')
-                .insert([{ username: username, password: password }]);
+            const { user, error } = await supabase.auth.signUp({
+                email,
+                password,
+            });
 
             if (error) {
-                console.error('Erro ao cadastrar usuário:', error);
-                alert('Erro ao cadastrar usuário.');
-            } else {
-                alert('Usuário cadastrado com sucesso!');
-                window.location.href = 'index.html'; // Redirecionar para a página de login
+                alert('Erro ao cadastrar: ' + error.message);
+                console.error('Erro:', error);
+                return;
             }
+
+            alert('Usuário cadastrado com sucesso! Você pode fazer login agora.');
+            window.location.href = 'index.html'; // Redireciona para a página de login
         }
 
-        document.getElementById('registerButton').onclick = () => {
-            const username = document.getElementById('newUsername').value;
-            const password = document.getElementById('newPassword').value;
-
-            if (!username || !password) {
-                showFeedback("Preencha todos os campos para cadastrar!");
-            } else {
-                registerUser(username, password);
-            }
-        };
-
-        document.getElementById('showPassword').onclick = () => {
-            const passwordField = document.getElementById('newPassword');
-            const type = passwordField.type === "password" ? "text" : "password";
-            passwordField.type = type;
-            document.getElementById('showPassword').textContent = type === "password" ? "Mostrar Senha" : "Ocultar Senha";
-        };
+        document.getElementById('registerButton').onclick = registerUser;
     </script>
 
 </body>

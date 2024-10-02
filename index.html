@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página de Login</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script> <!-- Importando Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -45,97 +45,44 @@
         .login-container button:hover {
             background-color: #0056b3;
         }
-        .message {
-            text-align: center;
-            font-size: 14px;
-            color: #555;
-            margin-bottom: 20px;
-        }
-        .show-password {
-            cursor: pointer;
-            font-size: 14px;
-            color: #007bff;
-            margin-top: -10px;
-            margin-bottom: 10px;
-        }
     </style>
 </head>
 <body>
 
     <div class="login-container">
-        <div class="message">Cadastre-se para iniciar seus depósitos</div>
         <h1>Login</h1>
-        <input type="text" id="username" placeholder="Usuário">
-        <input type="password" id="password" placeholder="Senha">
-        <span class="show-password" id="showPassword">Mostrar Senha</span>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Senha" required>
         <button id="loginButton">Entrar</button>
-        <button id="deleteButton">Excluir Usuário</button>
-        <a href="cadastro.html" style="display: block; text-align: center; margin-top: 15px;">Cadastrar</a>
+        <a href="cadastro.html" style="text-align: center; display: block; margin-top: 15px;">Criar Conta</a>
     </div>
 
     <script>
-        const supabaseUrl = 'https://onyaundlkuylwuyvhlny.supabase.co'; // Substitua pela sua URL do Supabase
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ueWF1bmRsa3V5bHd1eXZobG55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjc4MjkwOTcsImV4cCI6MjA0MzQwNTA5N30.e-Ov35V20ztxblG3XMQhIuKmfuolbT1UZy7iaBPVDj0'; // Substitua pela sua chave anon do Supabase
+        const supabaseUrl = 'https://YOUR_SUPABASE_URL'; // Substitua pela sua URL do Supabase
+        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY'; // Substitua pela sua chave anon do Supabase
         const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        const clearFields = () => {
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-        };
-
-        const showFeedback = (message) => {
-            alert(message);
-        };
-
-        async function loginUser(username, password) {
-            const { data: user, error } = await supabase
-                .from('users')
-                .select('*')
-                .eq('username', username)
-                .eq('password', password) // Verifique se a senha está correta
-                .single();
-
-            if (error || !user) {
-                alert('Usuário ou senha incorretos!');
-            } else {
-                localStorage.setItem('currentUser', user.id);
-                localStorage.setItem('isLoggedIn', true);
-                window.location.href = "depositos.html"; // Redirecionar para a página de depósitos
-            }
-        }
-
-        document.getElementById('loginButton').onclick = () => {
-            const username = document.getElementById('username').value;
+        async function loginUser() {
+            const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            loginUser(username, password);
-        };
 
-        document.getElementById('deleteButton').onclick = async () => {
-            const username = document.getElementById('username').value.trim();
-            if (!username) {
-                showFeedback('Insira o nome de usuário para excluir.');
+            const { user, error } = await supabase.auth.signIn({
+                email,
+                password,
+            });
+
+            if (error) {
+                alert('Erro ao fazer login: ' + error.message);
+                console.error('Erro:', error);
                 return;
             }
 
-            const { data, error } = await supabase
-                .from('users')
-                .delete()
-                .eq('username', username);
+            localStorage.setItem('currentUser', user.id);
+            localStorage.setItem('isLoggedIn', true);
+            window.location.href = 'depositos.html'; // Redireciona para a página de depósitos
+        }
 
-            if (error) {
-                showFeedback('Erro ao excluir usuário.');
-            } else {
-                showFeedback('Usuário excluído com sucesso.');
-                clearFields();
-            }
-        };
-
-        document.getElementById('showPassword').onclick = () => {
-            const passwordField = document.getElementById('password');
-            const type = passwordField.type === "password" ? "text" : "password";
-            passwordField.type = type;
-            document.getElementById('showPassword').textContent = type === "password" ? "Mostrar Senha" : "Ocultar Senha";
-        };
+        document.getElementById('loginButton').onclick = loginUser;
     </script>
 
 </body>

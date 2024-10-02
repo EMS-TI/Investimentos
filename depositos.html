@@ -56,8 +56,8 @@
 
         // Função para carregar e gerar depósitos
         function init() {
-            const savedDeposits = JSON.parse(localStorage.getItem(${username}_markedDeposits)) || [];
-            savedDeposits.forEach(([deposit, date]) => markedDeposits.set(deposit, date));
+            const savedDeposits = JSON.parse(localStorage.getItem(`${username}_markedDeposits`)) || [];
+            savedDeposits.forEach(([deposit, date]) => markedDeposits.set(Number(deposit), date));
             updateDaysSinceStart();
             updateTotals();
             deposits.forEach(createDepositBox);
@@ -68,8 +68,10 @@
         function createDepositBox(deposit) {
             const container = document.getElementById('depositContainer');
             const box = document.createElement('div'), tooltip = document.createElement('div');
-            box.className = 'deposit-box'; box.textContent = deposit;
-            tooltip.className = 'tooltip'; box.appendChild(tooltip);
+            box.className = 'deposit-box'; 
+            box.textContent = deposit;
+            tooltip.className = 'tooltip'; 
+            box.appendChild(tooltip);
             
             box.onmouseenter = () => showTooltip(tooltip, deposit);
             box.onmouseleave = () => tooltip.style.display = 'none';
@@ -82,7 +84,7 @@
         function showTooltip(tooltip, deposit) {
             if (markedDeposits.has(deposit)) {
                 const date = new Date(markedDeposits.get(deposit));
-                tooltip.textContent = Data: ${date.toLocaleDateString()};
+                tooltip.textContent = `Data: ${date.toLocaleDateString()}`;  // Corrigido
                 tooltip.style.display = 'block';
             }
         }
@@ -104,7 +106,7 @@
             if (!markedDeposits.size) return;
             const firstDate = new Date([...markedDeposits.values()][0]);
             const days = Math.floor((new Date() - firstDate) / (1000 * 3600 * 24));
-            document.getElementById('daysSinceStart').textContent = ${days} dias desde o início;
+            document.getElementById('daysSinceStart').textContent = `${days} dias desde o início`; // Corrigido
         }
 
         function updateTotals() {
@@ -117,12 +119,12 @@
         function updateProgressBar() {
             const total = [...markedDeposits.keys()].reduce((acc, val) => acc + val, 0);
             const progress = (total / totalAmount) * 100;
-            document.getElementById('progress').style.width = ${progress}%;
-            document.getElementById('progress').textContent = ${Math.floor(progress)}%;
+            document.getElementById('progress').style.width = `${progress}%`;  // Corrigido
+            document.getElementById('progress').textContent = `${Math.floor(progress)}%`;  // Corrigido
         }
 
         function saveData() {
-            localStorage.setItem(${username}_markedDeposits, JSON.stringify([...markedDeposits]));
+            localStorage.setItem(`${username}_markedDeposits`, JSON.stringify([...markedDeposits]));
         }
 
         function playSound() {

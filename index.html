@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página de Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,6 +15,7 @@
             height: 100vh;
             margin: 0;
         }
+
         .login-container {
             background-color: #fff;
             padding: 40px;
@@ -22,12 +24,14 @@
             width: 300px;
             position: relative;
         }
+
         .login-container h1 {
             margin-bottom: 30px;
             font-size: 26px;
             text-align: center;
         }
-        .login-container input, .login-container button {
+
+        .login-container input {
             display: block;
             width: 100%;
             padding: 10px;
@@ -36,15 +40,44 @@
             border-radius: 5px;
             font-size: 16px;
         }
+
+        .password-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .password-container input {
+            width: 100%;
+            padding-right: 40px; /* Espaço para o ícone */
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+            color: #aaa;
+        }
+
         .login-container button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             background-color: #007bff;
             color: #fff;
-            border: none;
+            font-size: 16px;
             cursor: pointer;
         }
+
         .login-container button:hover {
             background-color: #0056b3;
         }
+
         .message {
             text-align: center;
             font-size: 14px;
@@ -52,115 +85,96 @@
             margin-bottom: 20px;
         }
 
-        /* Estilos para o campo de senha com o ícone */
-        .password-container {
-            position: relative;
-        }
-        .password-container input {
-            padding-right: 40px; /* Espaço para o ícone dentro do campo */
-        }
-        .eye-icon {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            width: 20px;
-            height: 20px;
-            opacity: 0.7;
-        }
-        .eye-icon:hover {
-            opacity: 1;
-        }
     </style>
 </head>
 <body>
 
-    <div class="login-container" role="form" aria-labelledby="login-header">
-        <div class="message">Cadastre-se para iniciar seus depósitos</div>
-        <h1 id="login-header">Login</h1>
-        <label for="username">Usuário</label>
-        <input type="text" id="username" placeholder="Usuário" aria-required="true">
-        
-        <label for="password">Senha</label>
-        <div class="password-container">
-            <input type="password" id="password" placeholder="Senha" aria-required="true">
-            <!-- Ícone de olho para mostrar/ocultar a senha dentro do campo -->
-            <img src="eye-icon.png" alt="Mostrar/Ocultar senha" class="eye-icon" id="togglePassword">
-        </div>
-        
-        <button id="loginButton" aria-label="Entrar no sistema">Entrar</button>
-        <button id="deleteButton" aria-label="Excluir usuário">Excluir Usuário</button>
-        
-        <a href="cadastro.html" style="display: block; text-align: center; margin-top: 15px;" aria-label="Link para cadastro de novo usuário">Cadastrar</a>
+<div class="login-container">
+    <div class="message">Cadastre-se para iniciar seus depósitos</div>
+    <h1>Login</h1>
+    <input type="text" id="username" placeholder="Usuário">
+
+    <!-- Container do campo de senha e ícone -->
+    <div class="password-container">
+        <input type="password" id="password" placeholder="Senha">
+        <i class="fas fa-eye toggle-password" id="togglePassword"></i>
     </div>
 
-    <script>
-        const clearFields = () => {
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-        };
+    <button id="loginButton">Entrar</button>
+    <button id="deleteButton">Excluir Usuário</button>
+    <a href="cadastro.html" style="display: block; text-align: center; margin-top: 15px;">Cadastrar</a>
+</div>
 
-        const showFeedback = (message) => {
-            alert(message);
-        };
+<script>
+    // Função para alternar exibição da senha
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#password');
 
-        document.getElementById('loginButton').onclick = () => {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+    togglePassword.addEventListener('click', function () {
+        // Alterna o tipo de input entre 'password' e 'text'
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
 
-            if (localStorage.getItem(username) === password) {
-                localStorage.setItem('currentUser', username);
-                localStorage.setItem('isLoggedIn', true);
-                window.location.href = "depositos.html"; // Redireciona para a página de depósitos
-            } else {
-                showFeedback("Usuário ou senha incorretos!");
-            }
-        };
+        // Alterna o ícone entre olho e olho cortado
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
+    });
 
-        document.getElementById('deleteButton').onclick = () => {
-            const username = document.getElementById('username').value.trim();
-            if (!username) {
-                showFeedback('Insira o nome de usuário para excluir.');
-                return;
-            }
+    // Funções existentes
+    const clearFields = () => {
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+    };
 
-            if (localStorage.getItem(username)) {
-                localStorage.removeItem(username); // Remove o usuário
-                localStorage.removeItem(`${username}_markedDeposits`); // Remove depósitos
-                showFeedback('Usuário excluído com sucesso.');
-                clearFields(); // Limpa os campos após a exclusão
-            } else {
-                showFeedback('Usuário não encontrado.');
-            }
-        };
+    const showFeedback = (message) => {
+        alert(message);
+    };
 
-        document.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                document.getElementById('loginButton').click();
-            }
-        });
+    document.getElementById('loginButton').onclick = () => {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
 
-        // Lógica para mostrar/ocultar a senha
-        document.getElementById('togglePassword').onclick = () => {
-            const passwordField = document.getElementById('password');
-            const type = passwordField.type === "password" ? "text" : "password";
-            passwordField.type = type;
+        if (localStorage.getItem(username) === password) {
+            localStorage.setItem('currentUser', username);
+            localStorage.setItem('isLoggedIn', true);
+            window.location.href = "depositos.html"; // Redireciona para a página de depósitos
+        } else {
+            showFeedback("Usuário ou senha incorretos!");
+        }
+    };
 
-            // Altera o ícone de acordo com o estado
-            const eyeIcon = document.getElementById('togglePassword');
-            eyeIcon.src = type === "password" ? "eye-icon.png" : "eye-icon-slash.png"; // Substitua pelos caminhos dos ícones de "olho aberto" e "olho fechado"
-        };
+    document.getElementById('deleteButton').onclick = () => {
+        const username = document.getElementById('username').value.trim();
+        if (!username) {
+            showFeedback('Insira o nome de usuário para excluir.');
+            return;
+        }
 
-        window.onload = () => {
-            const isLoggedIn = localStorage.getItem('isLoggedIn');
-            const currentPage = window.location.pathname.split("/").pop();
+        if (localStorage.getItem(username)) {
+            localStorage.removeItem(username); // Remove o usuário
+            localStorage.removeItem(`${username}_markedDeposits`); // Remove depósitos
+            showFeedback('Usuário excluído com sucesso.');
+            clearFields(); // Limpa os campos após a exclusão
+        } else {
+            showFeedback('Usuário não encontrado.');
+        }
+    };
 
-            if (currentPage === 'depositos.html' && !isLoggedIn) {
-                window.location.href = "index.html"; // Redireciona se não estiver logado
-            }
-        };
-    </script>
+    document.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            document.getElementById('loginButton').click();
+        }
+    });
+
+    window.onload = () => {
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+        const currentPage = window.location.pathname.split("/").pop();
+
+        if (currentPage === 'depositos.html' && !isLoggedIn) {
+            window.location.href = "index.html"; // Redireciona se não estiver logado
+        }
+    };
+</script>
 
 </body>
 </html>

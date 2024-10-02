@@ -51,12 +51,26 @@
             color: #555;
             margin-bottom: 20px;
         }
-        /* Estilos para o ícone de olho */
+
+        /* Estilos para o campo de senha com o ícone */
+        .password-container {
+            position: relative;
+        }
+        .password-container input {
+            padding-right: 40px; /* Espaço para o ícone dentro do campo */
+        }
         .eye-icon {
             position: absolute;
-            right: 15px;
-            top: 122px;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
             cursor: pointer;
+            width: 20px;
+            height: 20px;
+            opacity: 0.7;
+        }
+        .eye-icon:hover {
+            opacity: 1;
         }
     </style>
 </head>
@@ -69,9 +83,11 @@
         <input type="text" id="username" placeholder="Usuário" aria-required="true">
         
         <label for="password">Senha</label>
-        <input type="password" id="password" placeholder="Senha" aria-required="true">
-        <!-- Ícone de olho para mostrar/ocultar a senha -->
-        <img src="eye-icon.png" alt="Mostrar/Ocultar senha" class="eye-icon" id="togglePassword">
+        <div class="password-container">
+            <input type="password" id="password" placeholder="Senha" aria-required="true">
+            <!-- Ícone de olho para mostrar/ocultar a senha dentro do campo -->
+            <img src="eye-icon.png" alt="Mostrar/Ocultar senha" class="eye-icon" id="togglePassword">
+        </div>
         
         <button id="loginButton" aria-label="Entrar no sistema">Entrar</button>
         <button id="deleteButton" aria-label="Excluir usuário">Excluir Usuário</button>

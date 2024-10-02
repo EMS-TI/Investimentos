@@ -54,14 +54,19 @@
 </head>
 <body>
 
-    <div class="login-container">
+    <div class="login-container" role="form" aria-labelledby="login-header">
         <div class="message">Cadastre-se para iniciar seus depósitos</div>
-        <h1>Login</h1>
-        <input type="text" id="username" placeholder="Usuário">
-        <input type="password" id="password" placeholder="Senha">
-        <button id="loginButton">Entrar</button>
-        <button id="deleteButton">Excluir Usuário</button>
-        <a href="cadastro.html" style="display: block; text-align: center; margin-top: 15px;">Cadastrar</a>
+        <h1 id="login-header">Login</h1>
+        <label for="username">Usuário</label>
+        <input type="text" id="username" placeholder="Usuário" aria-required="true">
+        
+        <label for="password">Senha</label>
+        <input type="password" id="password" placeholder="Senha" aria-required="true">
+        
+        <button id="loginButton" aria-label="Entrar no sistema">Entrar</button>
+        <button id="deleteButton" aria-label="Excluir usuário">Excluir Usuário</button>
+        
+        <a href="cadastro.html" style="display: block; text-align: center; margin-top: 15px;" aria-label="Link para cadastro de novo usuário">Cadastrar</a>
     </div>
 
     <script>

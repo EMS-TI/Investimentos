@@ -3,95 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página de Depósitos</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script> <!-- Importando Supabase -->
+    <title>Controle de Depósitos</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .depositos-container {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 300px;
-        }
-        .depositos-container h1 {
-            margin-bottom: 30px;
-            font-size: 26px;
-            text-align: center;
-        }
-        .depositos-container input, .depositos-container button {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        .depositos-container button {
-            background-color: #007bff;
+            background-color: #000;
             color: #fff;
-            border: none;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .deposit-box {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px;
+            background-color: #444;
+            border: 1px solid #fff;
             cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s;
         }
-        .depositos-container button:hover {
-            background-color: #0056b3;
-        }
+        .marked { background-color: #008000; }
+        .tooltip { display: none; position: absolute; background: #fff; color: #000; padding: 5px; border-radius: 5px; z-index: 10; }
+        .total-info, .feedback { margin: 20px; }
+        #progressBar { position: absolute; top: 20px; right: 20px; width: 200px; height: 30px; background: #444; border: 1px solid #fff; border-radius: 5px; }
+        #progress { width: 0; height: 100%; background: #008000; line-height: 30px; text-align: center; color: white; }
+        .feedback { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #444; padding: 10px; border-radius: 5px; opacity: 0; transition: opacity 0.3s; }
+        .show-feedback { opacity: 1; }
     </style>
 </head>
 <body>
+    <h1>Controle de Depósitos</h1>
+    <p id="daysSinceStart">0 dias desde o início</p>
 
-    <div class="depositos-container">
-        <h1>Depósitos</h1>
-        <input type="number" id="depositValue" placeholder="Valor do Depósito">
-        <button id="addDepositButton">Adicionar Depósito</button>
-        <a href="index.html" style="text-align: center; display: block; margin-top: 15px;">Voltar para Login</a>
+    <div class="total-info">
+        <p>Total Depositado: R$ <span id="totalDeposited">0.00</span></p>
+        <p>Faltam para completar os depósitos: R$ <span id="amountRemaining">5050.00</span></p>
+        <button id="resetButton">Reiniciar Depósitos</button>
+        <button id="logoutButton" style="background-color: red;">Sair</button>
     </div>
 
+    <div id="depositContainer"></div>
+    <div id="progressBar"><div id="progress">0%</div></div>
+
+    <div class="feedback" id="feedbackMessage"></div>
+
+    <audio id="depositSound" src="deposit-sound.mp3"></audio>
+
     <script>
-        const supabaseUrl = 'https://onyaundlkuylwuyvhlny.supabase.co'; // Substitua pela sua URL do Supabase
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ueWF1bmRsa3V5bHd1eXZobG55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjc4MjkwOTcsImV4cCI6MjA0MzQwNTA5N30.e-Ov35V20ztxblG3XMQhIuKmfuolbT1UZy7iaBPVDj0'; // Substitua pela sua chave anon do Supabase
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        const totalAmount = 5050.00, deposits = Array.from({ length: 100 }, (_, i) => i + 1);
+        const markedDeposits = new Map(), username = localStorage.getItem('currentUser');
 
-        async function addDeposit(depositValue) {
-            const userId = localStorage.getItem('currentUser');
+        // Função para carregar e gerar depósitos
+        function init() {
+            const savedDeposits = JSON.parse(localStorage.getItem(${username}_markedDeposits)) || [];
+            savedDeposits.forEach(([deposit, date]) => markedDeposits.set(deposit, date));
+            updateDaysSinceStart();
+            updateTotals();
+            deposits.forEach(createDepositBox);
+            updateProgressBar();
+        }
+
+        // Função que cria uma caixa de depósito
+        function createDepositBox(deposit) {
+            const container = document.getElementById('depositContainer');
+            const box = document.createElement('div'), tooltip = document.createElement('div');
+            box.className = 'deposit-box'; box.textContent = deposit;
+            tooltip.className = 'tooltip'; box.appendChild(tooltip);
             
-            if (!userId) {
-                alert("Usuário não logado!");
-                return;
-            }
+            box.onmouseenter = () => showTooltip(tooltip, deposit);
+            box.onmouseleave = () => tooltip.style.display = 'none';
+            box.onclick = () => toggleDeposit(deposit, box);
 
-            const { data, error } = await supabase
-                .from('deposits')
-                .insert([{ user_id: userId, deposit_value: depositValue, deposit_date: new Date() }]);
+            if (markedDeposits.has(deposit)) box.classList.add('marked');
+            container.appendChild(box);
+        }
 
-            if (error) {
-                console.error('Erro ao adicionar depósito:', error);
-                alert('Erro ao adicionar depósito.');
-            } else {
-                alert('Depósito adicionado com sucesso!');
-                // Aqui você pode atualizar a interface do usuário ou redirecionar
+        function showTooltip(tooltip, deposit) {
+            if (markedDeposits.has(deposit)) {
+                const date = new Date(markedDeposits.get(deposit));
+                tooltip.textContent = Data: ${date.toLocaleDateString()};
+                tooltip.style.display = 'block';
             }
         }
 
-        document.getElementById('addDepositButton').onclick = () => {
-            const depositValue = parseFloat(document.getElementById('depositValue').value);
-            
-            if (isNaN(depositValue) || depositValue <= 0) {
-                alert("Digite um valor de depósito válido!");
+        function toggleDeposit(deposit, box) {
+            if (markedDeposits.has(deposit)) {
+                if (confirm('Deseja remover este depósito?')) markedDeposits.delete(deposit);
             } else {
-                addDeposit(depositValue);
+                markedDeposits.set(deposit, new Date().toISOString());
+            }
+            saveData();
+            updateTotals();
+            updateProgressBar();
+            playSound();
+            box.classList.toggle('marked');
+        }
+
+        function updateDaysSinceStart() {
+            if (!markedDeposits.size) return;
+            const firstDate = new Date([...markedDeposits.values()][0]);
+            const days = Math.floor((new Date() - firstDate) / (1000 * 3600 * 24));
+            document.getElementById('daysSinceStart').textContent = ${days} dias desde o início;
+        }
+
+        function updateTotals() {
+            const total = [...markedDeposits.keys()].reduce((acc, val) => acc + val, 0);
+            document.getElementById('totalDeposited').textContent = total.toFixed(2);
+            document.getElementById('amountRemaining').textContent = (totalAmount - total).toFixed(2);
+            if (total >= totalAmount) alert("Parabéns! Todos os depósitos foram completados.");
+        }
+
+        function updateProgressBar() {
+            const total = [...markedDeposits.keys()].reduce((acc, val) => acc + val, 0);
+            const progress = (total / totalAmount) * 100;
+            document.getElementById('progress').style.width = ${progress}%;
+            document.getElementById('progress').textContent = ${Math.floor(progress)}%;
+        }
+
+        function saveData() {
+            localStorage.setItem(${username}_markedDeposits, JSON.stringify([...markedDeposits]));
+        }
+
+        function playSound() {
+            const sound = document.getElementById('depositSound');
+            sound.currentTime = 0;
+            sound.play().catch(console.error);
+        }
+
+        function showFeedback(message) {
+            const feedback = document.getElementById('feedbackMessage');
+            feedback.textContent = message;
+            feedback.classList.add('show-feedback');
+            setTimeout(() => feedback.classList.remove('show-feedback'), 2000);
+        }
+
+        document.getElementById('resetButton').onclick = () => {
+            if (confirm('Deseja reiniciar todos os depósitos?')) {
+                markedDeposits.clear();
+                saveData();
+                location.reload();
             }
         };
-    </script>
 
+        document.getElementById('logoutButton').onclick = () => {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('currentUser');
+            window.location.href = "index.html";
+        };
+
+        window.onload = () => {
+            if (!localStorage.getItem('isLoggedIn')) window.location.href = "index.html";
+            else init();
+        };
+    </script>
 </body>
 </html>

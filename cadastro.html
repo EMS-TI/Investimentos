@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página de Cadastro</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Mantenha o seu CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <style>
-        /* Seu CSS aqui */
+        /* Adicione aqui estilos do botão e da entrada de senha */
     </style>
 </head>
 <body>
@@ -16,7 +17,7 @@
         <input type="text" id="newUsername" placeholder="Usuário" required>
         <input type="password" id="newPassword" placeholder="Senha" required>
         <button id="registerButton">Cadastrar</button>
-        <a href="index.html">Voltar para Login</a>
+        <a href="login.html">Voltar para Login</a>
     </div>
 
     <script>
@@ -36,7 +37,7 @@
                 alert("Erro ao cadastrar: " + error.message);
             } else {
                 alert("Usuário cadastrado com sucesso!");
-                window.location.href = "index.html"; // Redireciona para a página de login
+                window.location.href = "login.html"; // Redireciona para a página de login
             }
         };
     </script>

@@ -84,7 +84,7 @@
         function showTooltip(tooltip, deposit) {
             if (markedDeposits.has(deposit)) {
                 const date = new Date(markedDeposits.get(deposit));
-                tooltip.textContent = `Data: ${date.toLocaleDateString()}`;  // Corrigido
+                tooltip.textContent = `Data: ${date.toLocaleDateString('pt-BR')}`;  // Corrigido
                 tooltip.style.display = 'block';
             }
         }

@@ -47,8 +47,7 @@
         }
 
         .password-container input {
-            width: 100%;
-            padding-right: 40px; /* Espaço para o ícone */
+            padding-right: 10px; /* Remover o espaço extra para o ícone */
         }
 
         .toggle-password {
@@ -97,7 +96,7 @@
     <!-- Container do campo de senha e ícone -->
     <div class="password-container">
         <input type="password" id="password" placeholder="Senha">
-        <i class="fas fa-eye-slash toggle-password" id="togglePassword"></i> <!-- Começa com o ícone 'eye-slash' -->
+        <i class="fas fa-eye-slash toggle-password" id="togglePassword"></i>
     </div>
 
     <button id="loginButton">Entrar</button>
@@ -106,21 +105,16 @@
 </div>
 
 <script>
-    // Função para alternar exibição da senha
     const togglePassword = document.querySelector('#togglePassword');
     const password = document.querySelector('#password');
 
     togglePassword.addEventListener('click', function () {
-        // Alterna o tipo de input entre 'password' e 'text'
         const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
         password.setAttribute('type', type);
-
-        // Alterna o ícone entre olho e olho cortado
-        this.classList.toggle('fa-eye-slash');  // Começa como 'fa-eye-slash'
-        this.classList.toggle('fa-eye');        // Mostra o 'fa-eye' ao clicar
+        this.classList.toggle('fa-eye-slash');
+        this.classList.toggle('fa-eye');
     });
 
-    // Funções existentes
     const clearFields = () => {
         document.getElementById('username').value = '';
         document.getElementById('password').value = '';
@@ -137,7 +131,7 @@
         if (localStorage.getItem(username) === password) {
             localStorage.setItem('currentUser', username);
             localStorage.setItem('isLoggedIn', true);
-            window.location.href = "depositos.html"; // Redireciona para a página de depósitos
+            window.location.href = "depositos.html";
         } else {
             showFeedback("Usuário ou senha incorretos!");
         }
@@ -151,10 +145,10 @@
         }
 
         if (localStorage.getItem(username)) {
-            localStorage.removeItem(username); // Remove o usuário
-            localStorage.removeItem(`${username}_markedDeposits`); // Remove depósitos
+            localStorage.removeItem(username);
+            localStorage.removeItem(`${username}_markedDeposits`);
             showFeedback('Usuário excluído com sucesso.');
-            clearFields(); // Limpa os campos após a exclusão
+            clearFields();
         } else {
             showFeedback('Usuário não encontrado.');
         }
@@ -171,7 +165,7 @@
         const currentPage = window.location.pathname.split("/").pop();
 
         if (currentPage === 'depositos.html' && !isLoggedIn) {
-            window.location.href = "index.html"; // Redireciona se não estiver logado
+            window.location.href = "index.html";
         }
     };
 </script>

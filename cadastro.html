@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página de Cadastro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -26,30 +27,54 @@
             font-size: 26px;
             text-align: center;
         }
-        .register-container input, .register-container button {
+        .register-container input {
+            display: block;
+            width: calc(100% - 20px); /* Garante que ambos os campos tenham a mesma largura */
+            padding: 10px; /* Mesmo preenchimento para ambos */
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box; /* Inclui padding e border na largura total */
+        }
+        .password-container {
+            position: relative;
+            width: 100%; /* Garante que o contêiner tenha a mesma largura */
+        }
+        .toggle-password {
+            position: absolute;
+            right: -10px; /* Movido mais para a direita, fora do alcance do campo */
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+            color: #6c757d; /* Cor do ícone */
+        }
+        .register-container button {
             display: block;
             width: 100%;
             padding: 10px;
             margin-bottom: 15px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            font-size: 16px;
-        }
-        .register-container button {
             background-color: #007bff;
             color: #fff;
-            border: none;
+            font-size: 16px;
             cursor: pointer;
         }
         .register-container button:hover {
             background-color: #0056b3;
         }
-        .show-password {
-            cursor: pointer;
+        .feedback {
+            text-align: center;
             font-size: 14px;
-            color: #007bff;
-            margin-top: -10px;
-            margin-bottom: 10px;
+            margin-top: 20px;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
         }
     </style>
 </head>
@@ -58,15 +83,27 @@
     <div class="register-container">
         <h1>Cadastrar Usuário</h1>
         <input type="text" id="newUsername" placeholder="Usuário">
-        <input type="password" id="newPassword" placeholder="Senha">
-        <span class="show-password" id="showPassword">Mostrar Senha</span>
+        <div class="password-container">
+            <input type="password" id="newPassword" placeholder="Senha">
+            <i class="fas fa-eye-slash toggle-password" id="showPassword"></i> <!-- Ícone de mostrar senha -->
+        </div>
         <button id="registerButton">Cadastrar</button>
         <a href="index.html" style="text-align: center; display: block; margin-top: 15px;">Voltar para Login</a>
+
+        <!-- Mensagem de feedback -->
+        <div class="feedback" id="feedbackMessage"></div>
     </div>
 
     <script>
-        const showFeedback = (message) => {
-            alert(message);
+        const showFeedback = (message, isSuccess) => {
+            const feedback = document.getElementById('feedbackMessage');
+            feedback.textContent = message;
+            feedback.className = isSuccess ? 'feedback success' : 'feedback error'; // Define cor com base no sucesso ou erro
+
+            // Apagar mensagem após 3 segundos
+            setTimeout(() => {
+                feedback.textContent = '';
+            }, 3000);
         };
 
         document.getElementById('registerButton').onclick = () => {
@@ -74,24 +111,28 @@
             const password = document.getElementById('newPassword').value;
 
             if (!username || !password) {
-                showFeedback("Preencha todos os campos para cadastrar!");
+                showFeedback("Preencha todos os campos para cadastrar!", false);
                 return;
             }
 
             if (localStorage.getItem(username)) {
-                showFeedback("Usuário já existe. Tente um nome diferente.");
+                showFeedback("Usuário já existe. Tente um nome diferente.", false);
             } else {
                 localStorage.setItem(username, password);
-                showFeedback("Usuário cadastrado com sucesso!");
-                window.location.href = "index.html"; // Redireciona para a página de login
+                showFeedback("Usuário cadastrado com sucesso!", true);
+                setTimeout(() => {
+                    window.location.href = "index.html"; // Redireciona para a página de login após sucesso
+                }, 1500);
             }
         };
 
+        // Toggle para mostrar/ocultar senha
         document.getElementById('showPassword').onclick = () => {
             const passwordField = document.getElementById('newPassword');
             const type = passwordField.type === "password" ? "text" : "password";
             passwordField.type = type;
-            document.getElementById('showPassword').textContent = type === "password" ? "Mostrar Senha" : "Ocultar Senha";
+            document.getElementById('showPassword').classList.toggle('fa-eye-slash');
+            document.getElementById('showPassword').classList.toggle('fa-eye');
         };
     </script>
 

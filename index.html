@@ -33,31 +33,28 @@
 
         .login-container input {
             display: block;
-            width: 100%;
-            padding: 10px;
+            width: calc(100% - 20px); /* Ajusta a largura total do campo */
+            padding: 10px; /* Mesmo preenchimento para ambos */
             margin-bottom: 15px;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 16px;
+            box-sizing: border-box; /* Inclui padding e border na largura total */
         }
 
         .password-container {
             position: relative;
-            width: 100%;
-        }
-
-        .password-container input {
-            padding-right: 10px; /* Remover o espaço extra para o ícone */
+            width: 100%; /* Garante que o contêiner tenha a mesma largura */
         }
 
         .toggle-password {
             position: absolute;
-            right: 10px;
+            right: -5px; /* Ajustado para mover mais à direita */
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
             font-size: 18px;
-            color: #aaa;
+            color: #6c757d; /* Mudando a cor do ícone */
         }
 
         .login-container button {
@@ -77,11 +74,19 @@
             background-color: #0056b3;
         }
 
-        .message {
+        /* Estilo para a mensagem de feedback */
+        .feedback {
             text-align: center;
             font-size: 14px;
-            color: #555;
-            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
         }
 
     </style>
@@ -102,6 +107,9 @@
     <button id="loginButton">Entrar</button>
     <button id="deleteButton">Excluir Usuário</button>
     <a href="cadastro.html" style="display: block; text-align: center; margin-top: 15px;">Cadastrar</a>
+
+    <!-- Mensagem de feedback -->
+    <div class="feedback" id="feedbackMessage"></div>
 </div>
 
 <script>
@@ -120,8 +128,15 @@
         document.getElementById('password').value = '';
     };
 
-    const showFeedback = (message) => {
-        alert(message);
+    const showFeedback = (message, isSuccess) => {
+        const feedback = document.getElementById('feedbackMessage');
+        feedback.textContent = message;
+        feedback.className = isSuccess ? 'feedback success' : 'feedback error'; // Define cor com base no sucesso ou erro
+
+        // Apagar mensagem após 3 segundos
+        setTimeout(() => {
+            feedback.textContent = '';
+        }, 3000);
     };
 
     document.getElementById('loginButton').onclick = () => {
@@ -131,26 +146,30 @@
         if (localStorage.getItem(username) === password) {
             localStorage.setItem('currentUser', username);
             localStorage.setItem('isLoggedIn', true);
-            window.location.href = "depositos.html";
+            showFeedback("Login realizado com sucesso!", true);  // Mostra mensagem de sucesso
+            setTimeout(() => {
+                window.location.href = "depositos.html";  // Redireciona após sucesso
+            }, 1500);
         } else {
-            showFeedback("Usuário ou senha incorretos!");
+            showFeedback("Usuário ou senha incorretos!", false);  // Mostra mensagem de erro
+            clearFields();  // Limpa os campos de entrada
         }
     };
 
     document.getElementById('deleteButton').onclick = () => {
         const username = document.getElementById('username').value.trim();
         if (!username) {
-            showFeedback('Insira o nome de usuário para excluir.');
+            showFeedback('Insira o nome de usuário para excluir.', false);
             return;
         }
 
         if (localStorage.getItem(username)) {
-            localStorage.removeItem(username);
-            localStorage.removeItem(`${username}_markedDeposits`);
-            showFeedback('Usuário excluído com sucesso.');
-            clearFields();
+            localStorage.removeItem(username); // Remove o usuário
+            localStorage.removeItem(`${username}_markedDeposits`); // Remove depósitos
+            showFeedback('Usuário excluído com sucesso.', true);
+            clearFields(); // Limpa os campos após a exclusão
         } else {
-            showFeedback('Usuário não encontrado.');
+            showFeedback('Usuário não encontrado.', false);
         }
     };
 
@@ -165,7 +184,7 @@
         const currentPage = window.location.pathname.split("/").pop();
 
         if (currentPage === 'depositos.html' && !isLoggedIn) {
-            window.location.href = "index.html";
+            window.location.href = "index.html"; // Redireciona se não estiver logado
         }
     };
 </script>

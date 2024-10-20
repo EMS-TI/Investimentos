@@ -3,191 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faça seu Login</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Controle de Depósitos</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            display: flex;
+            background-color: #000;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            max-width: 800px; /* limite de largura da página */
+            margin: 0 auto; /* centralizar a página */
+            padding: 20px; /* espaçamento nas bordas */
+        }
+        .deposit-box {
+            min-width: 60px; /* largura mínima */
+            max-width: 80px; /* largura máxima */
+            margin: 5px; /* margens entre as caixas */
+            padding: 10px;
+            background-color: #444;
+            border: 1px solid #fff;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s;
+        }
+        .marked { background-color: #008000; }
+        .tooltip { display: none; position: absolute; background: #fff; color: #000; padding: 5px; border-radius: 5px; z-index: 10; }
+        .total-info { margin: 20px; }
+        
+        /* Estilo da barra de progresso */
+        #progressContainer {
+            position: absolute; /* posicionamento absoluto */
+            top: 20px; /* distância do topo */
+            right: 20px; /* distância da direita */
+            width: 200px; /* largura da barra de progresso */
+            background: rgba(255, 255, 255, 0.2); /* fundo semi-transparente */
+            border-radius: 10px; /* cantos arredondados */
+            overflow: hidden; /* oculta o conteúdo que ultrapassar */
+        }
+        #progress {
+            height: 30px; /* altura da barra */
+            background: linear-gradient(90deg, #28a745, #d4edda); /* gradiente verde */
+            width: 0; /* largura inicial */
+            transition: width 0.4s ease; /* animação suave */
+            border-radius: 10px; /* cantos arredondados */
+        }
+
+        .feedback { margin-top: 20px; background: #444; padding: 10px; border-radius: 5px; opacity: 1; z-index: 999; display: none; } /* feedback */
+        .message { margin-top: 20px; font-size: 14px; text-align: center; }
+        .error { color: red; }
+        .success { color: green; }
+
+        /* Modal para confirmação */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            z-index: 1000;
         }
-
-        .login-container {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 300px;
-            position: relative;
-        }
-
-        .login-container h1 {
-            margin-bottom: 30px;
-            font-size: 26px;
+        .modal-content {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
             text-align: center;
-        }
-
-        .login-container input {
-            display: block;
-            width: calc(100% - 20px); /* Ajusta a largura total do campo */
-            padding: 10px; /* Mesmo preenchimento para ambos */
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            box-sizing: border-box; /* Inclui padding e border na largura total */
-        }
-
-        .password-container {
-            position: relative;
-            width: 100%; /* Garante que o contêiner tenha a mesma largura */
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: -5px; /* Ajustado para mover mais à direita */
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            font-size: 18px;
-            color: #6c757d; /* Mudando a cor do ícone */
-        }
-
-        .login-container button {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #007bff;
             color: #fff;
-            font-size: 16px;
-            cursor: pointer;
+            width: 90%; /* largura da modal em telas pequenas */
+            max-width: 300px; /* largura máxima da modal */
         }
-
-        .login-container button:hover {
-            background-color: #0056b3;
-        }
-
-        /* Estilo para a mensagem de feedback */
-        .feedback {
-            text-align: center;
-            font-size: 14px;
+        .modal-buttons {
             margin-top: 20px;
         }
-
-        .error {
-            color: red;
+        .modal-buttons button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .confirm-button {
+            background-color: #28a745;
+            color: #fff;
+        }
+        .cancel-button {
+            background-color: #dc3545;
+            color: #fff;
         }
 
-        .success {
-            color: green;
+        /* Flexbox para o Container de Depósitos */
+        #depositContainer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 60px; /* espaço para a barra de progresso e mensagens */
         }
 
+        @media (max-width: 600px) {
+            body {
+                font-size: 14px; /* texto menor em telas pequenas */
+            }
+            #progressContainer {
+                width: 90%; /* largura da barra de progresso em telas pequenas */
+            }
+        }
     </style>
 </head>
 <body>
-
-<div class="login-container">
-    <div class="message">Cadastre-se para iniciar seus depósitos</div>
-    <h1>Login</h1>
-    <input type="text" id="username" placeholder="Usuário">
-
-    <!-- Container do campo de senha e ícone -->
-    <div class="password-container">
-        <input type="password" id="password" placeholder="Senha">
-        <i class="fas fa-eye-slash toggle-password" id="togglePassword"></i>
+    <h1>Controle de Depósitos</h1>
+    <div id="progressContainer">
+        <div id="progress"></div> <!-- Barra de Progresso -->
     </div>
 
-    <button id="loginButton">Entrar</button>
-    <button id="deleteButton">Excluir Usuário</button>
-    <a href="cadastro.html" style="display: block; text-align: center; margin-top: 15px;">Cadastrar</a>
+    <p id="daysSinceStart">0 dias desde o início</p>
 
-    <!-- Mensagem de feedback -->
-    <div class="feedback" id="feedbackMessage"></div>
-</div>
+    <div class="total-info">
+        <p>Total Depositado: R$ <span id="totalDeposited">0.00</span></p>
+        <p>Faltam para completar os depósitos: R$ <span id="amountRemaining">5050.00</span></p>
+        <button id="resetButton">Reiniciar Depósitos</button>
+        <button id="logoutButton" style="background-color: red;">Sair</button>
+    </div>
 
-<script>
-    const togglePassword = document.querySelector('#togglePassword');
-    const password = document.querySelector('#password');
+    <div class="feedback" id="feedbackMessage"></div> <!-- Mensagem de feedback abaixo -->
 
-    togglePassword.addEventListener('click', function () {
-        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-        password.setAttribute('type', type);
-        this.classList.toggle('fa-eye-slash');
-        this.classList.toggle('fa-eye');
-    });
+    <div id="depositContainer"></div>
 
-    const clearFields = () => {
-        document.getElementById('username').value = '';
-        document.getElementById('password').value = '';
-    };
+    <!-- Modal de confirmação -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <p id="modalMessage"></p>
+            <div class="modal-buttons">
+                <button id="confirmButton" class="confirm-button">OK</button>
+                <button id="cancelButton" class="cancel-button">Cancelar</button>
+            </div>
+        </div>
+    </div>
 
-    const showFeedback = (message, isSuccess) => {
-        const feedback = document.getElementById('feedbackMessage');
-        feedback.textContent = message;
-        feedback.className = isSuccess ? 'feedback success' : 'feedback error'; // Define cor com base no sucesso ou erro
+    <audio id="depositSound" src="deposit-sound.mp3"></audio>
 
-        // Apagar mensagem após 3 segundos
-        setTimeout(() => {
-            feedback.textContent = '';
-        }, 3000);
-    };
+    <script>
+        const totalAmount = 5050.00, deposits = Array.from({ length: 100 }, (_, i) => i + 1);
+        const markedDeposits = new Map(), username = localStorage.getItem('currentUser');
+        let currentDeposit = null, isResetAction = false;
 
-    document.getElementById('loginButton').onclick = () => {
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+        function init() {
+            const savedDeposits = JSON.parse(localStorage.getItem(`${username}_markedDeposits`)) || [];
+            savedDeposits.forEach(([deposit, date]) => markedDeposits.set(Number(deposit), date));
+            updateDaysSinceStart();
+            updateTotals();
+            deposits.forEach(createDepositBox);
+            updateProgressBar(); // Atualiza a barra de progresso
+        }
 
-        if (localStorage.getItem(username) === password) {
-            localStorage.setItem('currentUser', username);
-            localStorage.setItem('isLoggedIn', true);
-            showFeedback("Login realizado com sucesso!", true);  // Mostra mensagem de sucesso
+        function createDepositBox(deposit) {
+            const container = document.getElementById('depositContainer');
+            const box = document.createElement('div'), tooltip = document.createElement('div');
+            box.className = 'deposit-box'; 
+            box.textContent = deposit;
+            tooltip.className = 'tooltip'; 
+            box.appendChild(tooltip);
+            
+            box.onmouseenter = () => showTooltip(tooltip, deposit);
+            box.onmouseleave = () => tooltip.style.display = 'none';
+            box.onclick = () => requestDepositAction(deposit, box);
+
+            if (markedDeposits.has(deposit)) box.classList.add('marked');
+            container.appendChild(box);
+        }
+
+        function showTooltip(tooltip, deposit) {
+            if (markedDeposits.has(deposit)) {
+                const date = new Date(markedDeposits.get(deposit));
+                tooltip.textContent = `Data: ${date.toLocaleDateString()}`;  
+                tooltip.style.display = 'block';
+            }
+        }
+
+        function requestDepositAction(deposit, box) {
+            if (markedDeposits.has(deposit)) {
+                // Exibe modal de confirmação
+                currentDeposit = deposit;
+                showModal(`Deseja remover o depósito ${deposit}?`);
+            } else {
+                markedDeposits.set(deposit, new Date().toISOString());
+                showFeedback('Depósito adicionado com sucesso!', true);
+                saveData();
+                updateTotals();
+                updateProgressBar(); // Atualiza a barra de progresso ao adicionar
+                playSound();
+                box.classList.toggle('marked');
+            }
+        }
+
+        function updateDaysSinceStart() {
+            if (!markedDeposits.size) return;
+            const firstDate = new Date([...markedDeposits.values()][0]);
+            const days = Math.floor((new Date() - firstDate) / (1000 * 3600 * 24));
+            document.getElementById('daysSinceStart').textContent = `${days} dias desde o início`;
+        }
+
+        function updateTotals() {
+            const total = [...markedDeposits.keys()].reduce((acc, val) => acc + val, 0);
+            document.getElementById('totalDeposited').textContent = total.toFixed(2);
+            document.getElementById('amountRemaining').textContent = (totalAmount - total).toFixed(2);
+            if (total >= totalAmount) {
+                showFeedback("Parabéns! Todos os depósitos foram completados.", true);
+            }
+        }
+
+        function updateProgressBar() {
+            const total = [...markedDeposits.keys()].reduce((acc, val) => acc + val, 0);
+            const progress = (total / totalAmount) * 100;
+            document.getElementById('progress').style.width = `${progress}%`; // Atualiza a largura da barra
+        }
+
+        function saveData() {
+            localStorage.setItem(`${username}_markedDeposits`, JSON.stringify([...markedDeposits]));
+        }
+
+        function playSound() {
+            const sound = document.getElementById('depositSound');
+            sound.currentTime = 0;
+            sound.play().catch(console.error);
+        }
+
+        function showFeedback(message, isSuccess) {
+            const feedback = document.getElementById('feedbackMessage');
+            feedback.textContent = message;
+            feedback.className = isSuccess ? 'message success' : 'message error';
+            feedback.style.display = 'block'; // Exibe a mensagem
+
+            // Apagar mensagem após 3 segundos
             setTimeout(() => {
-                window.location.href = "depositos.html";  // Redireciona após sucesso
-            }, 1500);
-        } else {
-            showFeedback("Usuário ou senha incorretos!", false);  // Mostra mensagem de erro
-            clearFields();  // Limpa os campos de entrada
-        }
-    };
-
-    document.getElementById('deleteButton').onclick = () => {
-        const username = document.getElementById('username').value.trim();
-        if (!username) {
-            showFeedback('Insira o nome de usuário para excluir.', false);
-            return;
+                feedback.style.display = 'none'; // Esconde a mensagem
+            }, 3000);
         }
 
-        if (localStorage.getItem(username)) {
-            localStorage.removeItem(username); // Remove o usuário
-            localStorage.removeItem(`${username}_markedDeposits`); // Remove depósitos
-            showFeedback('Usuário excluído com sucesso.', true);
-            clearFields(); // Limpa os campos após a exclusão
-        } else {
-            showFeedback('Usuário não encontrado.', false);
+        function showModal(message) {
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('confirmationModal').style.display = 'flex';
         }
-    };
 
-    document.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            document.getElementById('loginButton').click();
+        function hideModal() {
+            document.getElementById('confirmationModal').style.display = 'none';
         }
-    });
 
-    window.onload = () => {
-        const isLoggedIn = localStorage.getItem('isLoggedIn');
-        const currentPage = window.location.pathname.split("/").pop();
+        document.getElementById('resetButton').onclick = () => {
+            isResetAction = true;
+            showModal('Deseja realmente reiniciar todos os depósitos?');
+        };
 
-        if (currentPage === 'depositos.html' && !isLoggedIn) {
-            window.location.href = "index.html"; // Redireciona se não estiver logado
-        }
-    };
-</script>
+        document.getElementById('logoutButton').onclick = () => {
+            showFeedback('Você foi desconectado.', false);
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('currentUser');
+            setTimeout(() => window.location.href = "index.html", 1000);
+        };
 
+        document.getElementById('confirmButton').onclick = () => {
+            if (isResetAction) {
+                markedDeposits.clear();
+                saveData();
+                showFeedback('Todos os depósitos foram reiniciados!', true);
+                location.reload();
+            } else if (currentDeposit !== null) {
+                markedDeposits.delete(currentDeposit);
+                saveData();
+                updateTotals();
+                updateProgressBar(); // Atualiza a barra ao remover
+                showFeedback(`Depósito ${currentDeposit} removido com sucesso!`, true);
+                document.querySelector(`.deposit-box:nth-child(${currentDeposit})`).classList.toggle('marked');
+            }
+            hideModal();
+            currentDeposit = null;
+            isResetAction = false;
+        };
+
+        document.getElementById('cancelButton').onclick = () => {
+            hideModal();
+            currentDeposit = null;
+            isResetAction = false;
+        };
+
+        window.onload = () => {
+            if (!localStorage.getItem('isLoggedIn')) window.location.href = "index.html";
+            else init();
+        };
+    </script>
 </body>
 </html>

@@ -12,7 +12,7 @@
             text-align: center;
             margin: 0;
             padding: 0;
-            max-width: 800px; /* limite de largura da página */
+            max-width: 900px; /* aumento do limite de largura da página */
             margin: 0 auto; /* centralizar a página */
             padding: 20px; /* espaçamento nas bordas */
         }
@@ -33,16 +33,17 @@
         
         /* Estilo da barra de progresso */
         #progressContainer {
-            position: absolute; /* posicionamento absoluto */
-            top: 20px; /* distância do topo */
-            right: 20px; /* distância da direita */
-            width: 200px; /* largura da barra de progresso */
+            position: relative; /* posição relativa para garantir que não sobreponha outros elementos */
+            top: 0; /* reposiciona para o topo */
+            right: 0; /* não afeta a posição da barra */
+            width: 100%; /* largura total */
             background: rgba(255, 255, 255, 0.2); /* fundo semi-transparente */
             border-radius: 10px; /* cantos arredondados */
             overflow: hidden; /* oculta o conteúdo que ultrapassar */
+            height: 30px; /* altura da barra */
         }
         #progress {
-            height: 30px; /* altura da barra */
+            height: 100%; /* altura total da barra de progresso */
             background: linear-gradient(90deg, #28a745, #d4edda); /* gradiente verde */
             width: 0; /* largura inicial */
             transition: width 0.4s ease; /* animação suave */
@@ -100,7 +101,7 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            margin-top: 60px; /* espaço para a barra de progresso e mensagens */
+            margin-top: 20px; /* espaço para a barra de progresso e mensagens */
         }
 
         @media (max-width: 600px) {
@@ -108,7 +109,8 @@
                 font-size: 14px; /* texto menor em telas pequenas */
             }
             #progressContainer {
-                width: 90%; /* largura da barra de progresso em telas pequenas */
+                width: 100%; /* largura da barra de progresso em telas pequenas */
+                margin-top: 20px; /* espaço para evitar sobreposição com outros elementos */
             }
         }
     </style>

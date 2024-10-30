@@ -276,25 +276,4 @@
                 markedDeposits.delete(currentDeposit);
                 saveData();
                 updateTotals();
-                updateProgressBar(); // Atualiza a barra ao remover
-                showFeedback(`Depósito ${currentDeposit} removido com sucesso!`, true);
-                document.querySelector(`.deposit-box:nth-child(${currentDeposit})`).classList.toggle('marked');
-            }
-            hideModal();
-            currentDeposit = null;
-            isResetAction = false;
-        };
-
-        document.getElementById('cancelButton').onclick = () => {
-            hideModal();
-            currentDeposit = null;
-            isResetAction = false;
-        };
-
-        window.onload = () => {
-            if (!localStorage.getItem('isLoggedIn')) window.location.href = "index.html";
-            else init();
-        };
-    </script>
-</body>
-</html>
+                updateProgres

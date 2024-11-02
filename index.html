@@ -12,39 +12,38 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #0e0e0e;
-            color: #ffffff;
-            font-family: 'Arial', sans-serif;
+            background-color: #0e0e0e; /* Cor de fundo escura para um visual futurista */
+            color: #ffffff; /* Texto em branco */
+            font-family: 'Arial', sans-serif; /* Fonte moderna */
         }
 
-        #video-container, #courses-content {
+        #video-container {
             display: flex;
             justify-content: center;
-            flex-direction: column;
-            align-items: center;
+            margin-bottom: 10px; /* Margem reduzida */
         }
 
         video {
-            width: 250px;
+            width: 250px; /* Tamanho pequeno do vídeo */
             height: auto;
-            cursor: pointer;
+            cursor: pointer; /* Cursor em forma de ponteiro para indicar que é clicável */
         }
 
         #courses-content {
             display: none; /* Inicialmente oculto */
             text-align: center;
             margin-top: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1); /* Fundo semi-transparente */
+            border-radius: 10px; /* Cantos arredondados */
             padding: 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-            transition: opacity 0.5s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Sombra para efeito de profundidade */
+            transition: opacity 0.5s ease; /* Transição suave */
         }
 
         h2 {
             font-size: 24px;
             margin-bottom: 10px;
-            text-transform: uppercase;
+            text-transform: uppercase; /* Título em letras maiúsculas */
         }
 
         p {
@@ -52,37 +51,61 @@
             line-height: 1.5;
         }
 
+        /* Estilo das áreas dos cursos */
         .course-area {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2); /* Fundo das áreas */
+            border-radius: 10px; /* Cantos arredondados */
             padding: 15px;
             margin: 10px 0;
-            transition: transform 0.3s;
+            transition: transform 0.3s; /* Transição para efeito de crescimento */
         }
 
         .course-area:hover {
-            transform: scale(1.05);
+            transform: scale(1.05); /* Efeito de crescimento ao passar o mouse */
         }
 
-        #unmute-button, .nav-button {
+        /* Estilo do botão */
+        #unmute-button {
             padding: 10px 20px;
             font-size: 16px;
             color: #fff;
-            background-color: #007BFF;
+            background-color: #007BFF; /* Cor do botão */
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-            margin-top: 20px;
+            transition: background-color 0.3s, transform 0.3s; /* Transições */
+            margin-top: 20px; /* Margem acima do botão */
         }
 
-        #unmute-button:hover, .nav-button:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
+        #unmute-button:hover {
+            background-color: #0056b3; /* Cor ao passar o mouse */
+            transform: scale(1.05); /* Efeito de crescimento */
         }
 
-        #unmute-button:active, .nav-button:active {
-            transform: scale(0.95);
+        #unmute-button:active {
+            transform: scale(0.95); /* Efeito ao clicar */
+        }
+
+        /* Estilo dos botões de navegação */
+        .nav-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #28a745; /* Cor do botão de navegação */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s; /* Transições */
+            margin: 5px; /* Margem para os botões de navegação */
+        }
+
+        .nav-button:hover {
+            background-color: #218838; /* Cor ao passar o mouse */
+            transform: scale(1.05); /* Efeito de crescimento */
+        }
+
+        .nav-button:active {
+            transform: scale(0.95); /* Efeito ao clicar */
         }
     </style>
 </head>
@@ -124,9 +147,14 @@
         const coursesContent = document.getElementById('courses-content');
         const unmuteButton = document.getElementById('unmute-button');
 
-        // Verifica se a página foi aberta no Instagram
-        if (navigator.userAgent.includes('Instagram')) {
-            window.open('https://aesthetic-llama-09c4a3.netlify.app?=instagram', '_blank');
+        // Função para verificar se a página foi aberta a partir do Instagram
+        function isInstagram() {
+            return window.location.search.includes('=instagram');
+        }
+
+        // Reproduz o vídeo com som se aberto pelo Instagram
+        if (isInstagram()) {
+            video.muted = false; // Ativa o som
         }
 
         // Mostra o botão de ativar som
@@ -134,7 +162,7 @@
 
         // Evento que ocorre quando o vídeo é clicado
         video.addEventListener('click', () => {
-            window.open('https://www.instagram.com/ems_ti_wifi/', '_blank');
+            window.open('https://www.instagram.com/ems_ti_wifi/', '_blank'); // Abre o link em nova aba
         });
 
         // Evento que ocorre quando o vídeo termina

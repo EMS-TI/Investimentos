@@ -15,15 +15,13 @@
             background-color: #0e0e0e; /* Cor de fundo escura para um visual futurista */
             color: #ffffff; /* Texto em branco */
             font-family: 'Arial', sans-serif; /* Fonte moderna */
+            text-align: center; /* Centraliza o texto */
         }
 
-        #video-container, #courses-content {
+        #video-container {
             display: flex;
             justify-content: center;
-            align-items: center;
-            flex-direction: column; /* Alinha os itens no centro */
-            text-align: center; /* Centraliza o texto */
-            margin-bottom: 20px; /* Margem inferior */
+            margin-bottom: 10px; /* Margem reduzida */
         }
 
         video {
@@ -34,6 +32,8 @@
 
         #courses-content {
             display: none; /* Inicialmente oculto */
+            text-align: center;
+            margin-top: 20px;
             background: rgba(255, 255, 255, 0.1); /* Fundo semi-transparente */
             border-radius: 10px; /* Cantos arredondados */
             padding: 20px;
@@ -141,26 +141,26 @@
         <button class="nav-button" onclick="window.location.href='login.html'">Login</button>
     </div>
 
-    <button id="unmute-button" style="display: none;">Ativar Som</button> <!-- Inicialmente oculto -->
+    <button id="unmute-button">Ativar Som</button>
 
     <script>
         const video = document.getElementById('video');
         const coursesContent = document.getElementById('courses-content');
         const unmuteButton = document.getElementById('unmute-button');
 
-        // Função para verificar parâmetros da URL
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
-        }
-
-        // Verifica se a página foi aberta pelo Instagram
-        if (getQueryParam('source') === 'instagram') {
+        // Verifica se a página foi aberta a partir do Instagram
+        if (window.location.href.includes('instagram.com')) {
             video.style.display = 'none'; // Oculta o vídeo
             coursesContent.style.display = 'block'; // Exibe o conteúdo dos cursos
+            unmuteButton.style.display = 'none'; // Esconde o botão após o vídeo
         } else {
             // Mostra o botão de ativar som
             unmuteButton.style.display = 'block';
+
+            // Evento que ocorre quando o vídeo é clicado
+            video.addEventListener('click', () => {
+                window.open('https://www.instagram.com/ems_ti_wifi/', '_blank'); // Abre o link em nova aba
+            });
 
             // Evento que ocorre quando o vídeo termina
             video.addEventListener('ended', () => {
@@ -182,9 +182,11 @@
             });
         }
 
-        // Evento que ocorre quando o vídeo é clicado
-        video.addEventListener('click', () => {
-            window.open('https://www.instagram.com/ems_ti_wifi/', '_blank'); // Abre o link em nova aba
+        // Redireciona para um navegador externo
+        window.addEventListener('click', function() {
+            if (navigator.userAgent.includes('Instagram')) {
+                window.open(window.location.href, '_blank');
+            }
         });
     </script>
 </body>

@@ -12,39 +12,39 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #0e0e0e; /* Cor de fundo escura para um visual futurista */
-            color: #ffffff; /* Texto em branco */
-            font-family: 'Arial', sans-serif; /* Fonte moderna */
-            text-align: center; /* Centraliza o texto */
+            background-color: #0e0e0e;
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
         }
 
-        #video-container {
+        #video-container, #courses-content {
             display: flex;
             justify-content: center;
-            margin-bottom: 10px; /* Margem reduzida */
+            flex-direction: column;
+            align-items: center;
         }
 
         video {
-            width: 250px; /* Tamanho pequeno do vídeo */
+            width: 250px;
             height: auto;
-            cursor: pointer; /* Cursor em forma de ponteiro para indicar que é clicável */
+            cursor: pointer;
         }
 
         #courses-content {
             display: none; /* Inicialmente oculto */
             text-align: center;
             margin-top: 20px;
-            background: rgba(255, 255, 255, 0.1); /* Fundo semi-transparente */
-            border-radius: 10px; /* Cantos arredondados */
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
             padding: 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Sombra para efeito de profundidade */
-            transition: opacity 0.5s ease; /* Transição suave */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            transition: opacity 0.5s ease;
         }
 
         h2 {
             font-size: 24px;
             margin-bottom: 10px;
-            text-transform: uppercase; /* Título em letras maiúsculas */
+            text-transform: uppercase;
         }
 
         p {
@@ -52,61 +52,37 @@
             line-height: 1.5;
         }
 
-        /* Estilo das áreas dos cursos */
         .course-area {
-            background: rgba(255, 255, 255, 0.2); /* Fundo das áreas */
-            border-radius: 10px; /* Cantos arredondados */
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
             padding: 15px;
             margin: 10px 0;
-            transition: transform 0.3s; /* Transição para efeito de crescimento */
+            transition: transform 0.3s;
         }
 
         .course-area:hover {
-            transform: scale(1.05); /* Efeito de crescimento ao passar o mouse */
+            transform: scale(1.05);
         }
 
-        /* Estilo do botão */
-        #unmute-button {
+        #unmute-button, .nav-button {
             padding: 10px 20px;
             font-size: 16px;
             color: #fff;
-            background-color: #007BFF; /* Cor do botão */
+            background-color: #007BFF;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s; /* Transições */
-            margin-top: 20px; /* Margem acima do botão */
+            transition: background-color 0.3s, transform 0.3s;
+            margin-top: 20px;
         }
 
-        #unmute-button:hover {
-            background-color: #0056b3; /* Cor ao passar o mouse */
-            transform: scale(1.05); /* Efeito de crescimento */
+        #unmute-button:hover, .nav-button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
         }
 
-        #unmute-button:active {
-            transform: scale(0.95); /* Efeito ao clicar */
-        }
-
-        /* Estilo dos botões de navegação */
-        .nav-button {
-            padding: 10px 20px;
-            font-size: 16px;
-            color: #fff;
-            background-color: #28a745; /* Cor do botão de navegação */
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s; /* Transições */
-            margin: 5px; /* Margem para os botões de navegação */
-        }
-
-        .nav-button:hover {
-            background-color: #218838; /* Cor ao passar o mouse */
-            transform: scale(1.05); /* Efeito de crescimento */
-        }
-
-        .nav-button:active {
-            transform: scale(0.95); /* Efeito ao clicar */
+        #unmute-button:active, .nav-button:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
@@ -138,7 +114,7 @@
         </div>
 
         <button class="nav-button" onclick="window.location.href='cadastro.html'">Cadastrar-se</button>
-        <button class="nav-button" onclick="handleLoginClick()">Login</button>
+        <button class="nav-button" onclick="window.location.href='login.html'">Login</button>
     </div>
 
     <button id="unmute-button">Ativar Som</button>
@@ -148,52 +124,37 @@
         const coursesContent = document.getElementById('courses-content');
         const unmuteButton = document.getElementById('unmute-button');
 
-        // Verifica se a página foi aberta a partir do Instagram
-        const isInstagram = navigator.userAgent.includes('Instagram');
+        // Verifica se a página foi aberta no Instagram
+        if (navigator.userAgent.includes('Instagram')) {
+            window.open('https://aesthetic-llama-09c4a3.netlify.app', '_blank');
+        }
 
-        if (isInstagram) {
+        // Mostra o botão de ativar som
+        unmuteButton.style.display = 'block';
+
+        // Evento que ocorre quando o vídeo é clicado
+        video.addEventListener('click', () => {
+            window.open('https://www.instagram.com/ems_ti_wifi/', '_blank');
+        });
+
+        // Evento que ocorre quando o vídeo termina
+        video.addEventListener('ended', () => {
             video.style.display = 'none'; // Oculta o vídeo
             coursesContent.style.display = 'block'; // Exibe o conteúdo dos cursos
             coursesContent.style.opacity = '1'; // Define a opacidade do conteúdo
             unmuteButton.style.display = 'none'; // Esconde o botão após o vídeo
-        } else {
-            // Evento que ocorre quando o vídeo é clicado
-            video.addEventListener('click', () => {
-                window.open('https://www.instagram.com/ems_ti_wifi/', '_blank'); // Abre o link em nova aba
-            });
+        });
 
-            // Evento que ocorre quando o vídeo termina
-            video.addEventListener('ended', () => {
-                video.style.display = 'none'; // Oculta o vídeo
-                coursesContent.style.display = 'block'; // Exibe o conteúdo dos cursos
-                coursesContent.style.opacity = '1'; // Define a opacidade do conteúdo
-                unmuteButton.style.display = 'none'; // Esconde o botão após o vídeo
-            });
-
-            // Mostra o botão de ativar som
-            unmuteButton.style.display = 'block';
-
-            // Adiciona o evento de clique para ativar/desativar o som
-            unmuteButton.addEventListener('click', () => {
-                if (video.muted) {
-                    video.muted = false; // Ativa o som
-                    unmuteButton.textContent = 'Desativar Som'; // Muda o texto do botão
-                } else {
-                    video.muted = true; // Desativa o som
-                    unmuteButton.textContent = 'Ativar Som'; // Muda o texto do botão
-                }
-            });
-        }
-
-        // Função para lidar com o clique do botão de login
-        function handleLoginClick() {
-            if (isInstagram) {
-                coursesContent.style.display = 'block'; // Garante que o conteúdo dos cursos é mostrado
-                coursesContent.style.opacity = '1'; // Define a opacidade do conteúdo
+        // Adiciona o evento de clique para ativar/desativar o som
+        unmuteButton.addEventListener('click', () => {
+            if (video.muted) {
+                video.muted = false; // Ativa o som
+                unmuteButton.textContent = 'Desativar Som'; // Muda o texto do botão
             } else {
-                window.location.href = 'login.html'; // Redireciona para a página de login
+                video.muted = true; // Desativa o som
+                unmuteButton.textContent = 'Ativar Som'; // Muda o texto do botão
             }
-        }
+        });
     </script>
 </body>
 </html>

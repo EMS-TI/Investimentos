@@ -149,14 +149,12 @@
         const unmuteButton = document.getElementById('unmute-button');
 
         // Verifica se a página foi aberta a partir do Instagram
-        if (window.location.href.includes('instagram.com')) {
+        if (navigator.userAgent.includes('Instagram')) {
             video.style.display = 'none'; // Oculta o vídeo
             coursesContent.style.display = 'block'; // Exibe o conteúdo dos cursos
+            coursesContent.style.opacity = '1'; // Define a opacidade do conteúdo
             unmuteButton.style.display = 'none'; // Esconde o botão após o vídeo
         } else {
-            // Mostra o botão de ativar som
-            unmuteButton.style.display = 'block';
-
             // Evento que ocorre quando o vídeo é clicado
             video.addEventListener('click', () => {
                 window.open('https://www.instagram.com/ems_ti_wifi/', '_blank'); // Abre o link em nova aba
@@ -169,6 +167,9 @@
                 coursesContent.style.opacity = '1'; // Define a opacidade do conteúdo
                 unmuteButton.style.display = 'none'; // Esconde o botão após o vídeo
             });
+
+            // Mostra o botão de ativar som
+            unmuteButton.style.display = 'block';
 
             // Adiciona o evento de clique para ativar/desativar o som
             unmuteButton.addEventListener('click', () => {

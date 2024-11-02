@@ -138,7 +138,7 @@
         </div>
 
         <button class="nav-button" onclick="window.location.href='cadastro.html'">Cadastrar-se</button>
-        <button class="nav-button" onclick="window.location.href='login.html'">Login</button>
+        <button class="nav-button" onclick="handleLoginClick()">Login</button>
     </div>
 
     <button id="unmute-button">Ativar Som</button>
@@ -149,7 +149,9 @@
         const unmuteButton = document.getElementById('unmute-button');
 
         // Verifica se a página foi aberta a partir do Instagram
-        if (navigator.userAgent.includes('Instagram')) {
+        const isInstagram = navigator.userAgent.includes('Instagram');
+
+        if (isInstagram) {
             video.style.display = 'none'; // Oculta o vídeo
             coursesContent.style.display = 'block'; // Exibe o conteúdo dos cursos
             coursesContent.style.opacity = '1'; // Define a opacidade do conteúdo
@@ -183,12 +185,15 @@
             });
         }
 
-        // Redireciona para um navegador externo
-        window.addEventListener('click', function() {
-            if (navigator.userAgent.includes('Instagram')) {
-                window.open(window.location.href, '_blank');
+        // Função para lidar com o clique do botão de login
+        function handleLoginClick() {
+            if (isInstagram) {
+                coursesContent.style.display = 'block'; // Garante que o conteúdo dos cursos é mostrado
+                coursesContent.style.opacity = '1'; // Define a opacidade do conteúdo
+            } else {
+                window.location.href = 'login.html'; // Redireciona para a página de login
             }
-        });
+        }
     </script>
 </body>
 </html>

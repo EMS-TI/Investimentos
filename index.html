@@ -147,8 +147,11 @@
         const coursesContent = document.getElementById('courses-content');
         const unmuteButton = document.getElementById('unmute-button');
 
+        // Mostra o botão de ativar som
+        unmuteButton.style.display = 'block';
+
         // Verifica se a página foi aberta pelo Instagram
-        const isInstagram = window.navigator.userAgent.includes('Instagram');
+        const isInstagram = window.location.href.indexOf('=instagram') > -1;
 
         if (isInstagram) {
             video.style.display = 'none'; // Oculta o vídeo
@@ -156,33 +159,32 @@
             coursesContent.style.opacity = '1'; // Define a opacidade do conteúdo
             unmuteButton.style.display = 'none'; // Esconde o botão após o vídeo
         } else {
-            // Mostra o botão de ativar som
-            unmuteButton.style.display = 'block';
-
-            // Evento que ocorre quando o vídeo é clicado
-            video.addEventListener('click', () => {
-                window.open('https://www.instagram.com/ems_ti_wifi/', '_blank'); // Abre o link em nova aba
-            });
-
-            // Evento que ocorre quando o vídeo termina
-            video.addEventListener('ended', () => {
-                video.style.display = 'none'; // Oculta o vídeo
-                coursesContent.style.display = 'block'; // Exibe o conteúdo dos cursos
-                coursesContent.style.opacity = '1'; // Define a opacidade do conteúdo
-                unmuteButton.style.display = 'none'; // Esconde o botão após o vídeo
-            });
-
-            // Adiciona o evento de clique para ativar/desativar o som
-            unmuteButton.addEventListener('click', () => {
-                if (video.muted) {
-                    video.muted = false; // Ativa o som
-                    unmuteButton.textContent = 'Desativar Som'; // Muda o texto do botão
-                } else {
-                    video.muted = true; // Desativa o som
-                    unmuteButton.textContent = 'Ativar Som'; // Muda o texto do botão
-                }
-            });
+            video.play(); // Tenta reproduzir automaticamente o vídeo no navegador
         }
+
+        // Evento que ocorre quando o vídeo é clicado
+        video.addEventListener('click', () => {
+            window.open('https://www.instagram.com/ems_ti_wifi/', '_blank'); // Abre o link em nova aba
+        });
+
+        // Evento que ocorre quando o vídeo termina
+        video.addEventListener('ended', () => {
+            video.style.display = 'none'; // Oculta o vídeo
+            coursesContent.style.display = 'block'; // Exibe o conteúdo dos cursos
+            coursesContent.style.opacity = '1'; // Define a opacidade do conteúdo
+            unmuteButton.style.display = 'none'; // Esconde o botão após o vídeo
+        });
+
+        // Adiciona o evento de clique para ativar/desativar o som
+        unmuteButton.addEventListener('click', () => {
+            if (video.muted) {
+                video.muted = false; // Ativa o som
+                unmuteButton.textContent = 'Desativar Som'; // Muda o texto do botão
+            } else {
+                video.muted = true; // Desativa o som
+                unmuteButton.textContent = 'Ativar Som'; // Muda o texto do botão
+            }
+        });
     </script>
 </body>
 </html>

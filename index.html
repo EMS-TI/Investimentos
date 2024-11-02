@@ -107,7 +107,7 @@
     </style>
 </head>
 <body>
-    <div id="video-container">
+    <div id="video-container" style="display: none;">
         <video id="video" autoplay muted>
             <source src="videoems.mp4" type="video/mp4">
             Seu navegador não suporta o elemento de vídeo.
@@ -141,16 +141,27 @@
 
     <script>
         const video = document.getElementById('video');
+        const videoContainer = document.getElementById('video-container');
         const coursesContent = document.getElementById('courses-content');
         const unmuteButton = document.getElementById('unmute-button');
 
-        // Mostra o botão de ativar som
-        unmuteButton.style.display = 'block';
+        // Verifica se a página está sendo aberta pelo Instagram
+        const isInstagram = navigator.userAgent.includes('Instagram');
 
-        // Evento que ocorre quando o vídeo é clicado
-        video.addEventListener('click', () => {
-            window.open('https://www.instagram.com/ems_ti_wifi/', '_blank');
-        });
+        if (isInstagram) {
+            // Se for aberto pelo Instagram, mostra o conteúdo dos cursos
+            videoContainer.style.display = 'none';
+            coursesContent.style.display = 'block';
+        } else {
+            // Se não for pelo Instagram, exibe o vídeo
+            videoContainer.style.display = 'flex';
+            video.play(); // Inicia a reprodução do vídeo
+
+            // Adiciona um evento de click no vídeo para redirecionar ao link
+            video.addEventListener('click', () => {
+                window.open('https://www.instagram.com/ems_ti_wifi/', '_blank');
+            });
+        }
 
         // Evento que ocorre quando o vídeo termina
         video.addEventListener('ended', () => {
